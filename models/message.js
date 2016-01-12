@@ -22,7 +22,7 @@ var MessageSchema = new Schema({
   //   ref : 'Channel'
   // }
 
-  received_at : {
+  timestamp : {
     type : Date,
     default : Date.now
   },

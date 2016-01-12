@@ -130,20 +130,11 @@ require('./middlewares/passport')(passport);
 server.use(helpers.setCurrentUserGlobally);
 
 var usersCtrl = require('./controllers/users');
+var messagesCtrl = require('./controllers/messages');
 
 server.get('/ping', function(req, res){
     res.status(200).send('Pong!');
 });
-
-server.route('/home')
-  .get(helpers.authenticatedUser, function(request, response) {
-    response.render('home', { message : request.flash('homeMessage') });
-    logBroadcast('homepage!');
-  });
-
-server.route('/profile')
-  .get(helpers.authenticatedUser, usersCtrl.getProfile)
-  .post(helpers.authenticatedUser, usersCtrl.postProfile);
 
 server.route('/')
   .get(function(request, response) {
@@ -160,6 +151,19 @@ server.route('/login')
 
 server.route('/logout')
   .get(helpers.authenticatedUser, usersCtrl.getLogout);
+
+server.route('/messages')
+  .get(messagesCtrl.getMessages); // FIXME require auth
+
+server.route('/home')
+  .get(helpers.authenticatedUser, function(request, response) {
+    response.render('home', { message : request.flash('homeMessage') });
+    logBroadcast('homepage!');
+  });
+
+server.route('/profile')
+  .get(helpers.authenticatedUser, usersCtrl.getProfile)
+  .post(helpers.authenticatedUser, usersCtrl.postProfile);
 
 function logBroadcast(msg) {
   console.log(msg);
