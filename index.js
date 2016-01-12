@@ -43,8 +43,6 @@ server.use(passport.initialize());
 server.use(passport.session());
 server.use(flash());
 
-
-
 // passport config
 var UserModel = require('./models/user');
 // passport.use(new LocalStrategy(UserModel.authenticate()));
@@ -168,31 +166,55 @@ function logBroadcast(msg) {
   io.emit('debug message', '* server log: ' + msg);
 }
 
+var MessageModel = require('./models/message');
+
 var usersConnected = 0;
+
+function totalUsersMsg(number) {
+  return number + ' user(s) online now.';
+}
 
 // io event listeners
 io.on('connection', function(socket) {
 
   usersConnected += 1;
-  var msg = 'A user connected, now ' + usersConnected + ' total.';
+  var msg = 'A user connected. ' + totalUsersMsg(usersConnected);
   // console.log(msg);
   // io.emit('debug message', msg);
+
+  // TODO figure out how to not accept websocket connections from unauth'd users
+
   logBroadcast(msg);
 
   socket.on('chat message', function(msg) {
-    var newMsg = {
-      username: currentUser.username,
+
+    var newMessage = {
+      user_id: currentUser._id,
       body: msg.body,
       sent_at: msg.timestamp,
-      timestamp: Date.now()
     };
-    io.emit('chat message', newMsg);
-    console.log('Message received:', msg);
+
+    new MessageModel(newMessage).save(function(msgSaveError) {
+      if (msgSaveError) {
+        console.error('msgSaveError:', msgSaveError);
+        logBroadcast('msgSaveError');
+        // TODO send error message back to sender
+      } else {
+        // broadcast message after saving to database
+        // delete newMessage.user_id;
+        console.log(newMessage);
+        newMessage.username = currentUser.username;
+        newMessage.timestamp = Date.now();
+        logBroadcast('Server received and saved', newMessage);
+        io.emit('chat message', newMessage);
+      }
+    });
+
   });
 
   socket.on('disconnect', function() {
     usersConnected -= 1;
-    var msg = 'A user disconnected, now ' + usersConnected + ' total.';
+    var msg = 'A user disconnected. ' + totalUsersMsg(usersConnected);
     // console.log(msg);
     // io.emit('debug message', msg);
     logBroadcast(msg);
@@ -203,3 +225,5 @@ var port = env.PORT;
 http.listen(port, function() {
   console.log('Float server up and running on port', port + '.');
 });
+
+// _) * |\/|()()|\| //
