@@ -1,0 +1,22 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    title float messenger
+    link(rel='stylesheet', href='/style.css')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  body
+    h1
+      a(href='/') float messenger
+      |  with node and socket.io
+    //- if currentUser
+    //-   nav
+    //-     ul
+    //-       li
+    //-         a(href='/profile') profile
+    //-       li
+    //-         a(href='/logout') logout
+    //- if message
+    //-   .alert.alert-danger= message
+    main
+      block content

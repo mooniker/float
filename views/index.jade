@@ -1,0 +1,21 @@
+extends ./layout.jade
+
+block content
+  //- if !currentUser
+  //-   h2 you should not be seeing this!
+  //- else if currentUser.username
+  //-   h2 hey, 
+  //-     = currentUser.username
+  //-     if currentUser.mute
+  //-       em user is muted!
+  //- else
+  //-   h2 you need to set a username 
+  //- #status network status
+  ul#messages
+  form#messenger-form(action='/', method='post')
+    input#message-input(type='text', autocomplete='off')
+    button#message-submit send
+  script(src='/socket.io/socket.io.js')
+  script(src='https://code.jquery.com/jquery-1.11.1.js')
+  //- script(src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.0/locale/af.js')
+  script(src='/float.js')

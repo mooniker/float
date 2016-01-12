@@ -1,0 +1,27 @@
+{
+  "name": "float",
+  "version": "0.0.0",
+  "description": "Slack-like instant messaging server and client software",
+  "main": "index.js",
+  "dependencies": {
+    "moment": "^2.10.6",
+    "socket.io": "^1.4.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mooniker/float.git"
+  },
+  "keywords": [
+    "websockets"
+  ],
+  "author": "James Moon <mooniker@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mooniker/float/issues"
+  },
+  "homepage": "https://github.com/mooniker/float#readme"
+}
