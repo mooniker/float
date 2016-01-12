@@ -1,0 +1,16 @@
+extends ./layout.jade
+
+block content
+  h2 your profile
+  ul
+    li email: #{currentUser.local.email}
+    li account created on #{currentUser.local.createdAt}
+    li username: 
+      if currentUser.username
+        = currentUser.username
+      else
+        strong.red you must select a username!
+  form(action='/profile', method='post')
+    label(for='username')
+    input(type='text', name='username', id='username', value=currentUser.username)
+    input(type='submit')

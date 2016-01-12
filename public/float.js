@@ -39,7 +39,7 @@ var floatMessenger = {
       event.preventDefault();
 
       var message = {
-        username: 'me',
+        username: 'anon',
         body: this.messageInput.value,
         timestamp : Date.now()
       };
@@ -60,6 +60,10 @@ var floatMessenger = {
       // if ( $(this.messagesBox).children().length > 5) {
       // $(this.messagesBox).children().eq(0).fadeOut().remove();
     }.bind(this));
+
+    this.socket.on('debug message', function(msg) {
+      console.log('* SERVER DEBUG LOGGER:', msg);
+    });
 
   }
 };

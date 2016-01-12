@@ -11,6 +11,10 @@ block content
   //- else
   //-   h2 you need to set a username 
   //- #status network status
+  if currentUser.username
+    h2 hello #{currentUser.username}
+  else
+    h2 hello there, you need to set a username
   ul#messages
   form#messenger-form(action='/', method='post')
     input#message-input(type='text', autocomplete='off')

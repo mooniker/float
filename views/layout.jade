@@ -4,19 +4,23 @@ html(lang='en')
     meta(charset='UTF-8')
     title float messenger
     link(rel='stylesheet', href='/style.css')
+    link(rel='shortcut icon', href='/favicon.ico', type='image/x-icon')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
   body
     h1
-      a(href='/') float messenger
-      |  with node and socket.io
-    //- if currentUser
-    //-   nav
-    //-     ul
-    //-       li
-    //-         a(href='/profile') profile
-    //-       li
-    //-         a(href='/logout') logout
-    //- if message
-    //-   .alert.alert-danger= message
+      if currentUser
+        a(href='/home') float messenger
+      else
+        a(href='/') float messenger
+      |  (built on node.js/socket.io)
+    if currentUser
+      nav
+        ul
+          li
+            a(href='/profile') profile
+          li
+            a(href='/logout') logout
+    if message
+      strong.alert.alert-danger= message
     main
       block content

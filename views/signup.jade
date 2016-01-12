@@ -1,0 +1,16 @@
+extends ./layout.jade
+
+block content
+  h2 signup
+  if message.length
+    ul
+      for msg in message
+        li= msg
+  form(method='post', action='/signup')
+    .form-group
+      label(for='email') email
+      input(type='text', name='email', id='email')
+    .form-group
+      label(for='password') password
+      input(type='password', name='password', id='password')
+    input(type='submit')
