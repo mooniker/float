@@ -12,6 +12,9 @@ var http = require('http').Server(server);
 var io = require('socket.io')(http);
 var path = require('path');
 
+var Chance = require('chance');
+var chance = Chance();
+
 var expressSession = require('express-session');
 var favicon = require('serve-favicon');
 var flash = require('connect-flash');
@@ -178,6 +181,7 @@ function logBroadcast(msg) {
 var MessageModel = require('./models/message');
 
 var usersConnected = 0;
+var logBook = {};
 
 function totalUsersMsg(number) {
   return number + ' user(s) online now.';
@@ -188,8 +192,12 @@ io.on('connection', function(socket) {
 
   // console.log('socket.id', socket.id, 'socket.client.id', socket.client.id);
 
+  if (!logBook.hasOwnProperty(socket.client.id)) {
+    logBook[socket.client.id] = chance.word();
+  }
+
   usersConnected += 1;
-  var msg = 'A user (' + socket.client.id + ') connected. ' + totalUsersMsg(usersConnected);
+  var msg = 'A user named ' + logBook[socket.client.id] + ' connected. ' + totalUsersMsg(usersConnected);
   // console.log(msg);
   // io.emit('debug message', msg);
 
@@ -201,7 +209,7 @@ io.on('connection', function(socket) {
 
     var newMessage = {
       // user_id: currentUser._id,
-      username: socket.client.id,
+      username: logBook[socket.client.id],
       body: msg.body,
       sent_at: msg.timestamp,
     };
