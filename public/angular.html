@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html data-ng-app="float">
+  <head>
+    <title>Float Messenger</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-beta.2/angular-resource.min.js"></script> -->
+
+    <script src="app.js"></script>
+  </head>
+  <body ng-controller="ChannelController as channel">
+    <h1><a data-ui-sref="messageIndex">Float Messenger</a></h1>
+    <main data-ui-view>
+
+      <div ng-repeat="message in channel.messages">
+        <p chat-message></p>
+    </main>
+  </body>
+</html>
