@@ -138,32 +138,37 @@ server.get('/ping', function(req, res){
 
 server.route('/')
   .get(function(request, response) {
-    response.render('welcome', { message : request.flash('homeMessage') });
+    response.render('public');
   });
 
-server.route('/signup')
-  .get(usersCtrl.getSignup)
-  .post(usersCtrl.postSignup);
+// server.route('/')
+//   .get(function(request, response) {
+//     response.render('welcome', { message : request.flash('homeMessage') });
+//   });
 
-server.route('/login')
-  .get(usersCtrl.getLogin)
-  .post(usersCtrl.postLogin);
-
-server.route('/logout')
-  .get(helpers.authenticatedUser, usersCtrl.getLogout);
-
+// server.route('/signup')
+//   .get(usersCtrl.getSignup)
+//   .post(usersCtrl.postSignup);
+//
+// server.route('/login')
+//   .get(usersCtrl.getLogin)
+//   .post(usersCtrl.postLogin);
+//
+// server.route('/logout')
+//   .get(helpers.authenticatedUser, usersCtrl.getLogout);
+//
 server.route('/messages')
   .get(messagesCtrl.getMessages); // FIXME require auth
-
-server.route('/home')
-  .get(helpers.authenticatedUser, function(request, response) {
-    response.render('home', { message : request.flash('homeMessage') });
-    logBroadcast('homepage!');
-  });
-
-server.route('/profile')
-  .get(helpers.authenticatedUser, usersCtrl.getProfile)
-  .post(helpers.authenticatedUser, usersCtrl.postProfile);
+//
+// server.route('/home')
+//   .get(helpers.authenticatedUser, function(request, response) {
+//     response.render('home', { message : request.flash('homeMessage') });
+//     logBroadcast('homepage!');
+//   });
+//
+// server.route('/profile')
+//   .get(helpers.authenticatedUser, usersCtrl.getProfile)
+//   .post(helpers.authenticatedUser, usersCtrl.postProfile);
 
 function logBroadcast(msg) {
   console.log(msg);
@@ -181,8 +186,10 @@ function totalUsersMsg(number) {
 // io event listeners
 io.on('connection', function(socket) {
 
+  // console.log('socket.id', socket.id, 'socket.client.id', socket.client.id);
+
   usersConnected += 1;
-  var msg = 'A user connected. ' + totalUsersMsg(usersConnected);
+  var msg = 'A user (' + socket.client.id + ') connected. ' + totalUsersMsg(usersConnected);
   // console.log(msg);
   // io.emit('debug message', msg);
 
@@ -193,7 +200,8 @@ io.on('connection', function(socket) {
   socket.on('chat message', function(msg) {
 
     var newMessage = {
-      user_id: currentUser._id,
+      // user_id: currentUser._id,
+      username: socket.client.id,
       body: msg.body,
       sent_at: msg.timestamp,
     };
@@ -207,7 +215,7 @@ io.on('connection', function(socket) {
         // broadcast message after saving to database
         // delete newMessage.user_id;
         console.log(newMessage);
-        newMessage.username = currentUser.username;
+        // newMessage.username = currentUser.username;
         newMessage.timestamp = Date.now();
         logBroadcast('Server received and saved', newMessage);
         io.emit('chat message', newMessage);

@@ -4,7 +4,7 @@ var floatMessenger = {
 
   socketsCreated: 0,
 
-  status: 0,
+  // status: 0,
 
   messagesBox: document.querySelector('#messages-box'),
   messengerForm: document.querySelector('#messenger-form'),
@@ -29,11 +29,15 @@ var floatMessenger = {
 
   post: function(msg) {
     this.messagesBox.innerHTML += '<li title="' + msg.timestamp + '">' + msg.username + ': ' + msg.body + '</li>';
+    this.messagesBox.scrollTop = this.messagesBox.scrollHeight;
+    if (this.messagesBox.children.length > 10) {
+      this.messagesBox.removeChild(this.messagesBox.children[0]);
+    }
   },
 
   setStatusDisconnected: function() {
 
-    this.status = 0;
+    // this.status = 0;
 
     console.log('Status set to DISCONNECTED.');
 
@@ -45,43 +49,58 @@ var floatMessenger = {
     this.disableSend();
 
     this.post({
-      body: '<em>Connetion lost. Try <a href="/login">logging in again</a>.</em>',
+      body: '<em>Connetion lost.</em>',
       username: '<em>system</em>',
       timestamp: Date.now()
     });
   },
 
-  setStatusSocketEstablished: function() {
+  setStatusConnected: function() {
 
-    this.status = 1;
-
-    console.log('Status set to CONNECTION ESTABLISHED (login required).');
-    this.messageSubmit.style.background = 'yellow';
-    this.messageSubmit.innerText = 'LOG IN AGAIN';
-    // this.post({
-    //   body: 'connection reestablished but <a href="/login">you must log in again</a>.',
-    //   username: 'system',
-    //   timestamp: Date.now()
-    // });
-
-  },
-
-  setStatusAuthenticated: function() {
-
-    this.status = 2;
-
-    console.log('Status set to ONLINE.');
+    console.log('Status set to CONNECTED.');
 
     this.messageSubmit.style.background = 'green';
-    this.messageSubmit.innerText = 'SEND';
+    this.messageSubmit.innerText = 'CONNECTED';
     this.enableSend();
-
     this.post({
-      body: '<em>you are logged in.</em>',
+      body: '<em>Connection established.</em>',
       username: '<em>system</em>',
       timestamp: Date.now()
     });
+
   },
+
+  // setStatusSocketEstablished: function() {
+  //
+  //   this.status = 1;
+  //
+  //   console.log('Status set to CONNECTION ESTABLISHED (login required).');
+  //   this.messageSubmit.style.background = 'yellow';
+  //   this.messageSubmit.innerText = 'LOG IN AGAIN';
+  //   // this.post({
+  //   //   body: 'connection reestablished but <a href="/login">you must log in again</a>.',
+  //   //   username: 'system',
+  //   //   timestamp: Date.now()
+  //   // });
+  //
+  // },
+  //
+  // setStatusAuthenticated: function() {
+  //
+  //   this.status = 2;
+  //
+  //   console.log('Status set to ONLINE.');
+  //
+  //   this.messageSubmit.style.background = 'green';
+  //   this.messageSubmit.innerText = 'SEND';
+  //   this.enableSend();
+  //
+  //   this.post({
+  //     body: '<em>you are logged in.</em>',
+  //     username: '<em>system</em>',
+  //     timestamp: Date.now()
+  //   });
+  // },
 
   refreshMessages: function() {
 
@@ -91,6 +110,7 @@ var floatMessenger = {
     $.getJSON('/messages', function(data) {
       console.log('Server responded with', data);
       self.messagesBox.innerHTML = '';
+      // var messagesToDisplay = data.messages.slice()
       data.messages.forEach(function(msg) {
         self.post(msg);
       });
@@ -107,6 +127,7 @@ var floatMessenger = {
 
     // disable message sending functionality on startup
     // this.disableSend();
+    this.setStatusDisconnected();
 
     // initialize websocket
     this.socket = io();
@@ -114,16 +135,11 @@ var floatMessenger = {
 
     // set up websocket listeners
     this.socket.on('connect', function(err) {
-      this.setStatusSocketEstablished();
+      this.setStatusConnected();
       this.socketsCreated += 1;
       console.log('Connection established.', this.socketsCreated);
 
       this.refreshMessages(); // FIXME system messages are lost
-      if (this.socketsCreated < 2) { // bc session is lost on new websocket
-        this.setStatusAuthenticated();
-      } // TODO this needs some think time!
-      // can we authenticate web sockets to cut down on the weird logic?
-
 
 
     }.bind(this));

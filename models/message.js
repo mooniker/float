@@ -8,7 +8,7 @@ var Schema = mongoose.Schema,
 // define schema for messages
 var MessageSchema = new Schema({
 
-  // username : String,
+  username : String,
 
   body : String,
 
@@ -37,7 +37,9 @@ MessageSchema.methods.getUsername = function(callback) {
       console.error(error);
       return callback(error);
     } else {
+      if (doc && doc.username)
       return callback(null, doc.username);
+      return callback(null, 'unknown'); // FIXME
     }
   });
 };

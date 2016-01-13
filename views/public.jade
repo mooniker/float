@@ -1,0 +1,12 @@
+extends ./layout.jade
+
+block content
+  h2 hello
+  ul#messages-box
+  form#messenger-form(action='/', method='post')
+    input#message-input(type='text', autocomplete='off')
+    button#message-submit send
+  script(src='/socket.io/socket.io.js')
+  script(src='https://code.jquery.com/jquery-1.11.1.js')
+  //- script(src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.0/locale/af.js')
+  script(src='/float.js')
