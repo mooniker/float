@@ -2,6 +2,10 @@ extends ./layout.jade
 
 block content
   h2 your profile
+  if message.length
+    ul
+      for msg in message
+        li= msg
   ul
     li email: #{currentUser.local.email}
     li account created on #{currentUser.local.createdAt}

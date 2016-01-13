@@ -58,6 +58,8 @@ module.exports = {
           var msg = 'Username has been updated.';
           console.log(msg);
           response.render('profile', { message : request.flash('profileMessage', msg) });
+          // response.redirect('/home');
+          // FIXME seems like page is rendered before the db is updated?
         } else {
           var errMsg = 'Username not updated.';
           response.render('profile', { message : request.flash('profileMessage', errMsg) });
