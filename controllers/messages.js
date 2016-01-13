@@ -31,32 +31,33 @@ module.exports = {
           timestamp: Date.now()
         });
       } else {
-        console.log(docs.length);
-        var docsToSend = [];
-        var count = 0;
-        function matchMessageWithUsername(msg, index) {
-          msg.getUsername(function(msgGetUsernameError, username) {
-            var msgToSend = helpers.makeCopy(msg);
-            if (msgGetUsernameError) {
-              console.error(msgGetUsernameError);
-              if (msg.username) {
-                msgToSend.username = msg.username;
-              } else {
-                msgToSend.username = '???';
-              }
-            } else {
-              msgToSend.username = username;
-            }
-            docsToSend[index] = msgToSend;
-            count += 1; // count each as we match them
-            if (count >= docs.length) {
-              response.json({ messages : docsToSend });
-              console.log('Responded with one day of messages.');
-            }
-          });
-        }
-        console.log('run');
-        docs.forEach(matchMessageWithUsername);
+        response.json({ messages : docs });
+        // console.log(docs.length);
+        // var docsToSend = [];
+        // var count = 0;
+        // function matchMessageWithUsername(msg, index) {
+        //   msg.getUsername(function(msgGetUsernameError, username) {
+        //     var msgToSend = helpers.makeCopy(msg);
+        //     if (msgGetUsernameError) {
+        //       console.error(msgGetUsernameError);
+        //       if (msg.username) {
+        //         msgToSend.username = msg.username;
+        //       } else {
+        //         msgToSend.username = '???';
+        //       }
+        //     } else {
+        //       msgToSend.username = username;
+        //     }
+        //     docsToSend[index] = msgToSend;
+        //     count += 1; // count each as we match them
+        //     if (count >= docs.length) {
+        //       response.json({ messages : docsToSend });
+        //       console.log('Responded with one day of messages.');
+        //     }
+        //   });
+        // }
+        // console.log('run');
+        // docs.forEach(matchMessageWithUsername);
       }
     });
   }
