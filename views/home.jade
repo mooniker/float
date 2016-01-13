@@ -15,7 +15,7 @@ block content
     h2 hello #{currentUser.username}
   else
     h2 hello there, you need to set a username
-  ul#messages
+  ul#messages-box
   form#messenger-form(action='/', method='post')
     input#message-input(type='text', autocomplete='off')
     button#message-submit send
