@@ -184,6 +184,28 @@ var MessageModel = require('./models/message');
 var usersConnected = 0;
 var logbook = {};
 
+var usersCurrentlyTypingLogbook = {
+  // e.g.
+  // socket.client.id: Date,
+  // socket.client.id: Date,
+  // etc
+};
+
+// maybe don't need this
+// function getListOfTypers() {
+//   var list = [];
+//   for (key in usersCurrentlyTypingLogbook) {
+//     if (usersCurrentlyTypingLogbook[key] < Date.now() - 3000) {
+//       try {
+//         delete usersCurrentlyTypingLogbook[key];
+//       } catch(err) { console.error(err); }
+//     } else {
+//       list.push(logbook[key]);
+//     }
+//   }
+//   return list;
+// }
+
 function getCurrentUsernames() {
   var usernames = [];
   for (var key in logbook) {
@@ -239,6 +261,9 @@ io.on('connection', function(socket) {
   if (!logbook.hasOwnProperty(socket.client.id)) {
     logbook[socket.client.id] = chance.capitalize(chance.word());
   }
+  if (!(socket.client.id in usersCurrentlyTypingLogbook)) {
+    usersCurrentlyTypingLogbook[socket.client.id] = 0;
+  }
 
   // send that user her username
   yourUsername(socket.id, socket.client.id);
@@ -290,8 +315,46 @@ io.on('connection', function(socket) {
 
   });
 
+  // socket.on('user typing', function(time) {
+  //   if (!(socket.client.id in usersCurrentlyTypingLogbook)) {
+  //     usersCurrentlyTypingLogbook[socket.client.id] = time;
+  //     socket.emit('users typing', getListOfTypers());
+  //   } else if (usersCurrentlyTypingLogbook[socket.client.id] < Date.now() - 2000) {
+  //     // socket.emit('users typing', { typing: logbook[socket.client.id] });
+  //     socket.emit('users typing', getListOfTypers());
+  //   }
+  // });
+
+  socket.on('typing', function(time) {
+    console.log('user says she is typing.');
+    io.emit('user typing', {
+      username: logbook[socket.client.id],
+      timestamp: time
+    });
+  });
+
+  // socket.on('user not typing', function(data) {
+  //   try {
+  //     delete usersCurrentlyTypingLogbook[socket.client.id];
+  //     socket.emit('users typing', getListOfTypers());
+  //   } catch(err) {
+  //     console.error(error);
+  //   }
+  // });
+
+  socket.on('not typing', function(time) {
+    console.log('user says she isnt typing.');
+    io.emit('user not typing', logbook[socket.client.id]);
+  });
+
   socket.on('disconnect', function() {
     usersConnected -= 1;
+
+    if (socket.client.id in usersCurrentlyTypingLogbook) {
+      try {
+      delete usersCurrentlyTypingLogbook[socket.client.id];
+      } catch(err) { console.error(err); }
+    }
 
     var msg = logbook[socket.client.id] + ' disconnected. ' + totalUsersMsg(usersConnected);
 

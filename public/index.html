@@ -31,11 +31,14 @@
       </div>
 
       <div ng-controller="MessengerController as messenger">
-        <form id="messenger-form" novalidate>
-          <label for="message_body" title="That's you!"><strong>{{messenger.username}}</strong> (that's you!)</label>
-          <input type="text" name="message_body" ng-model="messenger.message.body" autofocus autocomplete="off" placeholder="send the people a message from here"></input>
-          <button ng-click="messenger.send(message)" id="#message-submit">send</button>
-        </form>
+        <p class="currently-typing">{{messenger.othersTypingStatus}}</p>
+        <div>
+          <form id="messenger-form" novalidate>
+            <label for="message_body" title="That's you!"><strong>{{messenger.username}}</strong> (that's you!)</label>
+            <input type="text" name="message_body" ng-model="messenger.message.body" autofocus autocomplete="off" placeholder="send the people a message from here" ng-change="messenger.typing()"></input>
+            <button ng-click="messenger.send(message)" id="#message-submit">send</button>
+          </form>
+        </div>
       </div>
 
       <aside ng-controller="UserIndexController as list">
