@@ -68,16 +68,17 @@
   //   });
   // }]);
 
-  app.controller('ChannelController', ['mySocket', function(socket) {
+  app.controller('ChannelController', ['$http', 'mySocket', function($http, socket) {
     var channel = this;
     channel.messages = [];
-    // $http.get('http://localhost:4001/messages').then(
-    //   function successfulCallback(response){
-    //     channel.messages = response.data.messages;
-    //     // console.log('GOT THE MESSAGES:', channel.messages);
-    //   }, function notSuccessfulCallback(response){
-    //     // console.log('DID NOT GET THE MESSGAGES.', response);
-    // });
+    
+    $http.get('http://localhost:4001/messages').then(
+      function successfulCallback(response){
+        channel.messages = response.data.messages;
+        // console.log('GOT THE MESSAGES:', channel.messages);
+      }, function notSuccessfulCallback(response){
+        // console.log('DID NOT GET THE MESSGAGES.', response);
+    });
 
     socket.on('connect', function(socket) {
       console.log('Connection established.');

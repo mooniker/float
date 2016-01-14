@@ -29,14 +29,15 @@
       <div ng-controller="MessengerController as messenger">
         <form id="messenger-form" novalidate>
           <label for="message_body"></label>
-          <input type="text" name="message_body" ng-model="messenger.message.body" autocomplete="off"></input>
+          <input type="text" name="message_body" ng-model="messenger.message.body" autocomplete="off" placeholder="send the people a message from here"></input>
           <button ng-click="messenger.send(message)" id="#message-submit">send</button>
         </form>
       </div>
 
-      <!-- <div ng-controller="SomeController as whatev">
-        {{1+ 1}}
-      </div> -->
+      <!-- <aside ng-controller="PopulationController">
+
+      </aside> -->
+
     </main>
 
   </body>
