@@ -139,7 +139,7 @@ server.get('/ping', function(req, res){
     res.status(200).send('Pong!');
 });
 
-server.route('/')
+server.route('/vanilla')
   .get(function(request, response) {
     response.render('public');
   });
@@ -182,35 +182,82 @@ function logBroadcast(msg) {
 var MessageModel = require('./models/message');
 
 var usersConnected = 0;
-var logBook = {};
+var logbook = {};
+
+function getCurrentUsernames() {
+  var usernames = [];
+  for (var key in logbook) {
+    usernames.push(logbook[key]);
+  }
+  return usernames;
+}
+
+server.route('/users').get(function(request, response) {
+  response.json({
+    usernames: getCurrentUsernames()
+  });
+});
+
+server.route('/username/:id').get(function(request, response) {
+
+  response.json({
+    username: logbook[request.params.id]
+  });
+
+});
 
 function totalUsersMsg(number) {
   return number + ' user(s) online now.';
 }
 
+function yourUsername(socketId, clientId) {
+  // console.log('YOUR USERNAME:', socketId, clientId);
+  // console.log(io.sockets);
+  io.sockets.connected[socketId].emit('your username', logbook[clientId]);
+  setTimeout(function() {
+    io.sockets.connected[socketId].emit('your username', logbook[clientId]);
+  }, 2000);
+}
+
 // io event listeners
 io.on('connection', function(socket) {
 
+  var socketId = socket.id;
+
   // console.log('socket.id', socket.id, 'socket.client.id', socket.client.id);
 
-  if (!logBook.hasOwnProperty(socket.client.id)) {
-    logBook[socket.client.id] = chance.capitalize(chance.word());
+  if (!logbook.hasOwnProperty(socket.client.id)) {
+    logbook[socket.client.id] = chance.capitalize(chance.word());
   }
 
+  // send that user her username
+  yourUsername(socket.id, socket.client.id);
+  // io.emit('user intro', {
+  //   clientId: socket.client.id,
+  //   username: logbook[socket.client.id]
+  // });
+
   usersConnected += 1;
-  var msg = 'A user named ' + logBook[socket.client.id] + ' connected. ' + totalUsersMsg(usersConnected);
+  var msg = 'A user named ' + logbook[socket.client.id] + ' connected. ' + totalUsersMsg(usersConnected);
   // console.log(msg);
   // io.emit('debug message', msg);
+
+  // announce new user to everyone
+  io.emit('current users', getCurrentUsernames());
 
   // TODO figure out how to not accept websocket connections from unauth'd users
 
   logBroadcast(msg);
 
+  // socket.on('my username', function(msg) {
+  //   yourUsername(socket.id, socket.client.id);
+  // });
+
   socket.on('chat message', function(msg) {
 
     var newMessage = {
       // user_id: currentUser._id,
-      username: logBook[socket.client.id],
+      username: logbook[socket.client.id],
       body: msg.body,
       sent_at: msg.timestamp,
     };
@@ -236,12 +283,12 @@ io.on('connection', function(socket) {
   socket.on('disconnect', function() {
     usersConnected -= 1;
 
-    var msg = logBook[socket.client.id] + ' disconnected. ' + totalUsersMsg(usersConnected);
+    var msg = logbook[socket.client.id] + ' disconnected. ' + totalUsersMsg(usersConnected);
 
     // console.log(msg);
     // io.emit('debug message', msg);
     logBroadcast(msg);
-    delete logBook[socket.client.id];
+    delete logbook[socket.client.id];
   });
 });
 

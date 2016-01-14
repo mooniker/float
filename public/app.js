@@ -1,6 +1,6 @@
 'use strict';
 
-(function(){
+(function() {
 
   var app = angular.module('float', [
     // 'ngWebSocket'
@@ -10,68 +10,25 @@
   app.factory('mySocket', function(socketFactory) {
     var mySocket = socketFactory();
     mySocket.forward('error');
-    mySocket.forward('')
+    mySocket.forward('your username');
     return mySocket;
   });
 
-  // app.controller('MyCtrl', function(mySocket) {
-  //   $scope.$on('socket:error', function(ev, data) {
-  //     //
-  //     alert('socket error');
-  //   });
-  // });
-
-  // console.log('Angular app initialized.');
+  app.controller('MyController', ['$scope', '$http', 'mySocket', function($scope, $http, socket) {
+    var my = this;
+    my.username = '???';
 
 
+    $scope.$on('socket:your username', function (ev, data) {
+      my.username = data;
+    });
 
-  //
-  // app.factory('MyData', function($websocket) {
-  //   // Open a WebSocket connection
-  //   var dataStream = $websocket('ws://localhost:4001');
-  //
-  //   var collection = [];
-  //
-  //   dataStream.onError(function(err) {
-  //     console.log('websocket error:', err);
-  //   });
-  //
-  //   dataStream.onMessage(function(message) {
-  //     collection.push(JSON.parse(message.data));
-  //   });
-  //
-  //   var methods = {
-  //     collection: collection,
-  //     get: function() {
-  //       dataStream.send(JSON.stringify({ action: 'get' }));
-  //     }
-  //   };
-  //
-  //   console.log('websocketFactory init');
-  //   return methods;
-  // });
-  //
-  // app.controller('SomeController', function($scope, MyData) {
-  //   $scope.MyData = MyData;
-  //   console.log($scope.MyData);
-  // });
+  }]);
 
-  // app.controller('ChannelController', ['$http', function($http){
-  //   var channel = this;
-  //   channel.messages = [];
-  //   $http.get('http://localhost:4001/messages').then(
-  //     function successfulCallback(response){
-  //       channel.messages = response.data.messages;
-  //       // console.log('GOT THE MESSAGES:', channel.messages);
-  //     }, function notSuccessfulCallback(response){
-  //       // console.log('DID NOT GET THE MESSGAGES.', response);
-  //   });
-  // }]);
-
-  app.controller('ChannelController', ['$http', 'mySocket', function($http, socket) {
+  app.controller('ChannelController', ['$scope', '$http', 'mySocket', function($scope, $http, socket) {
     var channel = this;
     channel.messages = [];
-    
+
     $http.get('http://localhost:4001/messages').then(
       function successfulCallback(response){
         channel.messages = response.data.messages;
@@ -88,48 +45,27 @@
       channel.messages.push(msg);
       console.log('Received:', msg);
     });
+
+    $scope.$on('socket:your username', function (ev, data) {
+      console.log(data);
+    });
+
   }]);
 
-  // app.controller('MessengerController', ['$http', function($http){
-  //   this.message = {};
-  //
-  //   this.send = function(msg) {
-  //     // alert('Message: ' + this.message.body);
-  //     console.log('send evoked!');
-  //     if (this.message.body.trim() != '') {
-  //       $http({
-  //         method: 'POST',
-  //         url: '/messages',
-  //         header: {
-  //           'Content-Type': 'application/json'
-  //         },
-  //         data: {
-  //           body: this.message.body,
-  //           timestamp: Date.now()
-  //         }
-  //       }).then( // FIXME this works but the success callback isn't evoked
-  //         function successfulCallback(response){
-  //           this.message.body = '';
-  //           console.log('message sent');
-  //         }, function unsuccessfulCallback(response){
-  //           console.log('message NOT sent');
-  //           alert(':( no win.')
-  //         }
-  //       );
-  //     } else if (this.message.body.trim() === '') {
-  //       this.message.body = '';
-  //     }
-  //
-  //   };
-  // }]);
-
-  app.controller('MessengerController', ['mySocket', function(socket) {
+  app.controller('MessengerController', ['$scope', 'mySocket', function($scope, socket) {
     this.message = {};
+    var my = this;
+    my.username = '???';
+
+    $scope.$on('socket:your username', function (ev, data) {
+      my.username = data;
+    });
 
     this.send = function(msg) {
 
-      console.log('send evoked!');
-
+      // if (this.message.body[0] = '/') {
+      //   // TODO messenger commands /join, /me, /callme
+      // } else
       if (this.message.body.trim() != '') {
         socket.emit('chat message', {
           body: this.message.body,
@@ -139,16 +75,41 @@
       } else if (this.message.body.trim() === '') {
         this.message.body = '';
       }
-
     };
   }]);
 
+  app.controller('UserIndexController', ['$http', 'mySocket', function($http, socket) {
+    var userList = this;
+    userList.usernames = [];
 
-  app.directive('chatMessage', function(){
+    $http.get('http://localhost:4001/users').then(
+      function successfulCallback(response){
+        userList.usernames = response.data.usernames;
+        console.log('Current users fetched.');
+      }, function notSuccessfulCallback(response){
+        console.error(response);
+    });
+
+    socket.on('current users', function(currentList) {
+      userList.usernames = currentList;
+      console.log('Received:', currentList);
+    });
+
+  }]);
+
+
+  app.directive('chatMessage', function() {
     return {
       restrict: 'A',
       templateUrl: 'message.html'
     };
+  });
+
+  app.directive('username', function() {
+    return {
+      restrict: 'A',
+      templateUrl: 'username.html'
+    }
   });
 
 })();

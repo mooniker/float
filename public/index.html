@@ -22,21 +22,28 @@
 
     <main ng-controller="ChannelController as channel">
 
+      <div ng-controller="MyController as my" ng-hide="my.username == '???'">
+        <h2>Hi {{my.username}}! (That's your name here.)</h2>
+      </div>
+
       <div id="#message-box">
         <p chat-message ng-repeat="message in channel.messages"></p>
       </div>
 
       <div ng-controller="MessengerController as messenger">
         <form id="messenger-form" novalidate>
-          <label for="message_body"></label>
-          <input type="text" name="message_body" ng-model="messenger.message.body" autocomplete="off" placeholder="send the people a message from here"></input>
+          <label for="message_body" title="That's you!"><strong>{{messenger.username}}</strong> (that's you!)</label>
+          <input type="text" name="message_body" ng-model="messenger.message.body" autofocus autocomplete="off" placeholder="send the people a message from here"></input>
           <button ng-click="messenger.send(message)" id="#message-submit">send</button>
         </form>
       </div>
 
-      <!-- <aside ng-controller="PopulationController">
-
-      </aside> -->
+      <aside ng-controller="UserIndexController as list">
+        <h2>current users</h2>
+        <ul>
+          <li username ng-repeat="username in list.usernames"></li>
+        </ul>
+      </aside>
 
     </main>
 
