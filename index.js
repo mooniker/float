@@ -211,11 +211,21 @@ function totalUsersMsg(number) {
 }
 
 function yourUsername(socketId, clientId) {
-  // console.log('YOUR USERNAME:', socketId, clientId);
-  // console.log(io.sockets);
+
+  // FIXME below code is a hack
   io.sockets.connected[socketId].emit('your username', logbook[clientId]);
   setTimeout(function() {
-    io.sockets.connected[socketId].emit('your username', logbook[clientId]);
+    try {
+      io.sockets.connected[socketId].emit('your username', logbook[clientId]);
+    } catch( error ) {
+      setTimeout(function() {
+        try {
+          io.sockets.connected[socketId].emit('your username', logbook[clientId]);
+        } catch (err) {
+          // give up
+        }
+      }, 4000);
+    }
   }, 2000);
 }
 
@@ -232,8 +242,8 @@ io.on('connection', function(socket) {
 
   // send that user her username
   yourUsername(socket.id, socket.client.id);
+
   // io.emit('user intro', {
-  //   clientId: socket.client.id,
   //   username: logbook[socket.client.id]
   // });
 
@@ -258,7 +268,7 @@ io.on('connection', function(socket) {
     var newMessage = {
       // user_id: currentUser._id,
       username: logbook[socket.client.id],
-      body: msg.body,
+      body: 'blah' in msg ? chance.sentence() : msg.body,
       sent_at: msg.timestamp,
     };
 

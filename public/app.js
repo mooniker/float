@@ -11,13 +11,14 @@
     var mySocket = socketFactory();
     mySocket.forward('error');
     mySocket.forward('your username');
+    mySocket.forward('chat message');
+
     return mySocket;
   });
 
-  app.controller('MyController', ['$scope', '$http', 'mySocket', function($scope, $http, socket) {
+  app.controller('MyController', ['$scope', function($scope) {
     var my = this;
     my.username = '???';
-
 
     $scope.$on('socket:your username', function (ev, data) {
       my.username = data;
@@ -25,11 +26,11 @@
 
   }]);
 
-  app.controller('ChannelController', ['$scope', '$http', 'mySocket', function($scope, $http, socket) {
+  app.controller('ChannelController', ['$scope', '$http', function($scope, $http) {
     var channel = this;
     channel.messages = [];
 
-    $http.get('http://localhost:4001/messages').then(
+    $http.get('/messages').then(
       function successfulCallback(response){
         channel.messages = response.data.messages;
         // console.log('GOT THE MESSAGES:', channel.messages);
@@ -37,11 +38,7 @@
         // console.log('DID NOT GET THE MESSGAGES.', response);
     });
 
-    socket.on('connect', function(socket) {
-      console.log('Connection established.');
-    });
-
-    socket.on('chat message', function(msg) {
+    $scope.$on('socket:chat message', function(ev, msg) {
       channel.messages.push(msg);
       console.log('Received:', msg);
     });
@@ -62,10 +59,16 @@
     });
 
     this.send = function(msg) {
-
-      // if (this.message.body[0] = '/') {
-      //   // TODO messenger commands /join, /me, /callme
-      // } else
+      if (this.message.body[0] === '/') {
+        if (this.message.body.trim() === '/blah') {
+          console.log('blah blah blah');
+          socket.emit('chat message', {
+            timestamp: Date.now(),
+            blah: 5
+          });
+          this.message.body = '';
+        }
+      } else
       if (this.message.body.trim() != '') {
         socket.emit('chat message', {
           body: this.message.body,
@@ -109,7 +112,7 @@
     return {
       restrict: 'A',
       templateUrl: 'username.html'
-    }
+    };
   });
 
 })();
