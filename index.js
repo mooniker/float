@@ -161,7 +161,8 @@ server.route('/')
 //   .get(helpers.authenticatedUser, usersCtrl.getLogout);
 //
 server.route('/messages')
-  .get(messagesCtrl.getMessages); // FIXME require auth
+  .get(messagesCtrl.getMessages) // FIXME require auth
+  .post(messagesCtrl.postMessage); // FIXME testing angular
 //
 // server.route('/home')
 //   .get(helpers.authenticatedUser, function(request, response) {
@@ -193,7 +194,7 @@ io.on('connection', function(socket) {
   // console.log('socket.id', socket.id, 'socket.client.id', socket.client.id);
 
   if (!logBook.hasOwnProperty(socket.client.id)) {
-    logBook[socket.client.id] = chance.word();
+    logBook[socket.client.id] = chance.capitalize(chance.word());
   }
 
   usersConnected += 1;
@@ -234,10 +235,13 @@ io.on('connection', function(socket) {
 
   socket.on('disconnect', function() {
     usersConnected -= 1;
-    var msg = 'A user disconnected. ' + totalUsersMsg(usersConnected);
+
+    var msg = logBook[socket.client.id] + ' disconnected. ' + totalUsersMsg(usersConnected);
+
     // console.log(msg);
     // io.emit('debug message', msg);
     logBroadcast(msg);
+    delete logBook[socket.client.id];
   });
 });
 

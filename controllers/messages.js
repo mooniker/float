@@ -60,5 +60,32 @@ module.exports = {
         // docs.forEach(matchMessageWithUsername);
       }
     });
+  },
+
+  postMessage: function(request, response) {
+
+    // FIXME this is just here to test posting via Angular
+
+    console.log('postMessage!');
+
+    console.log(request);
+    console.log(request.data);
+
+    var message = {
+      body: request.body.body,
+      username: 'unknown poster',
+      sent_at: request.body.timestamp,
+      timestamp: Date.now()
+    };
+
+    new MessageModel(message).save(function(newMessageSaveError) {
+      if (newMessageSaveError) {
+        console.error('newMessageSaveError:', newMessageSaveError);
+      } else {
+        // unable to
+        // io.emit('chat message', message);
+      }
+    });
+
   }
 };
