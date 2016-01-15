@@ -31,19 +31,20 @@
 
         <div class="col-md-8 col-sm-10">
 
-          <ul id="#message-box" class="list-group-item">
-            <li data-chat-message data-ng-repeat="message in channel.messages" class="list-group-item"></li>
-          </ul>
-
           <div data-ng-controller="MessengerController as messenger" id="messenger">
-            <p id="currently-typing">{{messenger.othersTypingStatus}}</p>
-            <div>
+
+            <ul id="#message-box" class="list-group-item">
+              <li data-chat-message data-ng-repeat="message in channel.messages" class="list-group-item"></li>
+              <li id="currently-typing" class="list-group-item">{{messenger.othersTypingStatus}}</li>
+            <!-- </ul> -->
+
+            <!-- <div> --><li class="list-group-item">
               <form id="messenger-form" novalidate>
                 <label for="message_body" title="That's you!"><strong>{{messenger.username}}</strong> (that's you!)</label>
                 <input type="text" name="message_body" id="message_body" data-ng-model="messenger.message.body" autofocus autocomplete="off" placeholder="send the people a message from here" data-ng-change="messenger.typing()">
                 <button data-ng-click="messenger.send(message)" id="#message-submit">send</button>
               </form>
-            </div>
+            <!-- </div> --></li></ul>
           </div>
 
         </div>
