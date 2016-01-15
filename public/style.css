@@ -6,3 +6,16 @@ body { font: 13px Helvetica, Arial; }
 #messages-box { list-style-type: none; margin: 1em auto 10em; padding: 0; overflow-y: scroll; }
 #messages-box li { padding: 5px 10px; }
 #messages-box li:nth-child(odd) { background: #eee; }*/
+
+#messenger {
+  overflow: scroll;
+  height: 80vh;
+}
+
+#message_body {
+  width: 65%;
+}
+
+#message-submit {
+  display: hidden;
+}

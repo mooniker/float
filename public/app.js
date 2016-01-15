@@ -191,3 +191,11 @@
   });
 
 })();
+
+$.scrolline({
+    reverse : true,
+    position : 'left',
+    backColor : '#2980b9',
+    frontColor : '#f1c40f',
+    weight : 24
+});

@@ -13,17 +13,33 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="socket.js"></script>
+    <script src="scrolline.js"></script>
     <script src="app.js"></script>
   </head>
 
   <body>
 
-    <header class="jumbotron">
-      <h1>Float Messenger</h1>
+    <!-- <header class="jumbotron"> -->
+      <!-- <h1>Float Messenger</h1>
       <div data-ng-controller="MyController as my" data-ng-hide="my.username == '???'">
         <h2>Hi, {{my.username}}! <span>(That's your name here.)</span></h2>
-      </div>
-    </header>
+      </div> -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#">Float Messenger</a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li class="active" data-ng-controller="MyController as my" data-ng-hide="my.username == '???'"><a href="#currently-typing">Hi, {{my.username}}! <span>(That's your name here.)</span></a></li>
+            <li><a href="#">Angular</a></li>
+            <li><a href="#">Socket.IO</a></li>
+            <li><a href="#">Express</a></li>
+            <li><a href="#">Node.js</a></li>
+            <li><a href="#">MongoDB</a></li>
+          </ul>
+        </div>
+      </nav>
+    <!-- </header> -->
 
     <main data-ng-controller="ChannelController as channel" class="container">
 
