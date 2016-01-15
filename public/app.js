@@ -3,7 +3,6 @@
 (function() {
 
   var app = angular.module('float', [
-    // 'ngWebSocket'
     'btford.socket-io'
   ]);
 
@@ -33,9 +32,8 @@
     $http.get('/messages').then(
       function successfulCallback(response){
         channel.messages = response.data.messages;
-        // console.log('GOT THE MESSAGES:', channel.messages);
       }, function notSuccessfulCallback(response){
-        // console.log('DID NOT GET THE MESSGAGES.', response);
+        // sad face
     });
 
     $scope.$on('socket:chat message', function(ev, msg) {
@@ -77,19 +75,7 @@
       my.username = data;
     });
 
-    // socket.on('users typing', function(users) {
-    //   // console.log('Received:', users);
-    //   this.othersAreTyping = users.join(', ') + ' are typing.';
-    //   console.log(this.othersAreTyping);
-    // });
-
     socket.on('user typing', function(data) {
-      // console.log('user typing:', data);
-      // if (data.username in my.events.othersTyping) {
-      //   my.events.othersTyping[data.username] = data.timestamp;
-      // } else {
-      //   my.events.othersTyping[data.username] = data.timestamp;
-      // }
       my.othersTyping[data.username] = data.timestamp;
       console.log('user typing:', data);
       my.refreshEvents();
@@ -102,14 +88,6 @@
       console.log('user not typing:', username);
       my.refreshEvents();
     });
-
-    // socket.on('not typing', function(data) {
-    //   console.log('recd: not typing', data);
-    // });
-    //
-    // socket.on('typing', function(data) {
-    //   console.log('recd: typing', data);
-    // });
 
     this.typing = function() {
       // check to see if user has typed anything
