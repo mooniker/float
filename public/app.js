@@ -138,7 +138,7 @@
     var userList = this;
     userList.usernames = [];
 
-    $http.get('http://localhost:4001/users').then(
+    $http.get('/users').then(
       function successfulCallback(response){
         userList.usernames = response.data.usernames;
         console.log('Current users fetched.');
@@ -185,10 +185,10 @@
 
 })();
 
-$.scrolline({
-    reverse : true,
-    position : 'left',
-    backColor : '#2980b9',
-    frontColor : '#f1c40f',
-    weight : 24
-});
+// $.scrolline({
+//     reverse : true,
+//     position : 'left',
+//     backColor : '#2980b9',
+//     frontColor : '#f1c40f',
+//     weight : 24
+// });
