@@ -106,12 +106,18 @@
 
     this.send = function(msg) {
       if (this.message.body[0] === '/') {
+        // if (this.message.body.slice(1).split()[0]) // TODO use this to validate commands
         if (this.message.body.trim() === '/blah') {
           console.log('blah blah blah');
           socket.emit('chat message', {
             timestamp: Date.now(),
             blah: true
           });
+          this.message.body = '';
+          this.whenLastTyped = Date.now();
+        } else if (this.message.body.trim() === '/house') {
+          console.log('house');
+          socket.emit('rename me', 'house');
           this.message.body = '';
           this.whenLastTyped = Date.now();
         }

@@ -347,6 +347,21 @@ io.on('connection', function(socket) {
     io.emit('user not typing', logbook[socket.client.id]);
   });
 
+  socket.on('rename me', function(house) {
+    console.log('user wants to be renamed');
+    if (socket.client.id in logbook) {
+      var oldName = logbook[socket.client.id]
+      logbook[socket.client.id] = 'House of ' + logbook[socket.client.id];
+      yourUsername(socket.id, socket.client.id);
+      var newMessage = {
+        username: 'FLOAT SYSTEM',
+        body: oldName + ' is now called ' + logbook[socket.client.id] + '.',
+        sent_at: Date.now(),
+      };
+      io.emit('chat message', newMessage);
+    }
+  });
+
   socket.on('disconnect', function() {
     usersConnected -= 1;
 
