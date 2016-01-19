@@ -191,6 +191,8 @@ var usersCurrentlyTypingLogbook = {
   // etc
 };
 
+var eventRefresher;
+
 function announceUsersTyping() {
   var usernames = [];
   for (var clientId in logbook) {
@@ -206,6 +208,11 @@ function announceUsersTyping() {
   io.emit('event', newEvent);
   logBroadcast(newEvent);
   console.log(newEvent);
+
+  clearTimeout(eventRefresher); // clear the event announcer timer
+  // announce events again in 4 seconds if needed
+  if (Object.keys(usersCurrentlyTypingLogbook).length > 0)
+    eventRefresher = setTimeout(announceUsersTyping, 4000);
 }
 
 function getCurrentUsernames() {
