@@ -6,9 +6,13 @@
 
 ### Events
 
-#### 'typing'
+#### 'typing' and 'not typing'
 
-#### 'not typing'
+```js
+var eventMessage = {
+  usersTyping: []
+}
+```
 
 ### Commands/Requests
 

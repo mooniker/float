@@ -191,6 +191,23 @@ var usersCurrentlyTypingLogbook = {
   // etc
 };
 
+function announceUsersTyping() {
+  var usernames = [];
+  for (var clientId in logbook) {
+    if (usersCurrentlyTypingLogbook[clientId] > Date.now() - 5000) {
+      usernames.push(logbook[clientId]);
+    } else if (usersCurrentlyTypingLogbook[clientId] < Date.now - 10000) {
+      delete usersCurrentlyTypingLogbook[clientId];
+    }
+  }
+  var newEvent = {
+    usersTyping: usernames
+  };
+  io.emit('event', newEvent);
+  logBroadcast(newEvent);
+  console.log(newEvent);
+}
+
 function getCurrentUsernames() {
   var usernames = [];
   for (var key in logbook) {
@@ -301,16 +318,22 @@ io.on('connection', function(socket) {
   });
 
   socket.on('typing', function(time) {
-    console.log('user says she is typing.');
-    io.emit('user typing', {
-      username: logbook[socket.client.id],
-      timestamp: time
-    });
+    // console.log('user says she is typing.');
+    // io.emit('user typing', {
+    //   username: logbook[socket.client.id],
+    //   timestamp: time
+    // });
+    usersCurrentlyTypingLogbook[socket.client.id] = time;
+    announceUsersTyping();
+
   });
 
   socket.on('not typing', function(time) {
-    console.log('user says she isnt typing.');
-    io.emit('user not typing', logbook[socket.client.id]);
+    // console.log('user says she isnt typing.');
+    // io.emit('user not typing', logbook[socket.client.id]);
+    usersCurrentlyTypingLogbook[socket.client.id] = 0;
+    delete usersCurrentlyTypingLogbook[socket.client.id];
+    announceUsersTyping();
   });
 
   socket.on('rename me', function(house) {
