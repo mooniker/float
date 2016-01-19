@@ -191,21 +191,6 @@ var usersCurrentlyTypingLogbook = {
   // etc
 };
 
-// maybe don't need this
-// function getListOfTypers() {
-//   var list = [];
-//   for (key in usersCurrentlyTypingLogbook) {
-//     if (usersCurrentlyTypingLogbook[key] < Date.now() - 3000) {
-//       try {
-//         delete usersCurrentlyTypingLogbook[key];
-//       } catch(err) { console.error(err); }
-//     } else {
-//       list.push(logbook[key]);
-//     }
-//   }
-//   return list;
-// }
-
 function getCurrentUsernames() {
   var usernames = [];
   for (var key in logbook) {
@@ -315,16 +300,6 @@ io.on('connection', function(socket) {
 
   });
 
-  // socket.on('user typing', function(time) {
-  //   if (!(socket.client.id in usersCurrentlyTypingLogbook)) {
-  //     usersCurrentlyTypingLogbook[socket.client.id] = time;
-  //     socket.emit('users typing', getListOfTypers());
-  //   } else if (usersCurrentlyTypingLogbook[socket.client.id] < Date.now() - 2000) {
-  //     // socket.emit('users typing', { typing: logbook[socket.client.id] });
-  //     socket.emit('users typing', getListOfTypers());
-  //   }
-  // });
-
   socket.on('typing', function(time) {
     console.log('user says she is typing.');
     io.emit('user typing', {
@@ -332,15 +307,6 @@ io.on('connection', function(socket) {
       timestamp: time
     });
   });
-
-  // socket.on('user not typing', function(data) {
-  //   try {
-  //     delete usersCurrentlyTypingLogbook[socket.client.id];
-  //     socket.emit('users typing', getListOfTypers());
-  //   } catch(err) {
-  //     console.error(error);
-  //   }
-  // });
 
   socket.on('not typing', function(time) {
     console.log('user says she isnt typing.');
@@ -350,7 +316,7 @@ io.on('connection', function(socket) {
   socket.on('rename me', function(house) {
     console.log('user wants to be renamed');
     if (socket.client.id in logbook) {
-      var oldName = logbook[socket.client.id]
+      var oldName = logbook[socket.client.id];
       logbook[socket.client.id] = 'House of ' + logbook[socket.client.id];
       yourUsername(socket.id, socket.client.id);
       var newMessage = {

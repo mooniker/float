@@ -39,6 +39,7 @@
     $scope.$on('socket:chat message', function(ev, msg) {
       channel.messages.push(msg);
       console.log('Received:', msg);
+      // TODO want the message box to be scrolled to the bottom
     });
 
   }]);
@@ -175,7 +176,7 @@
   });
 
   app.directive('scrollToBottom', function() {
-    return {
+    return { // FIXME this doesn't seem to do anything
       scope: {
         scrollToBottom: '='
       },
@@ -190,11 +191,3 @@
   });
 
 })();
-
-// $.scrolline({
-//     reverse : true,
-//     position : 'left',
-//     backColor : '#2980b9',
-//     frontColor : '#f1c40f',
-//     weight : 24
-// });
