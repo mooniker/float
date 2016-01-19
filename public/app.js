@@ -65,15 +65,16 @@
     };
     this.reportedly = { // the last typing message sent to server
       typing: false,
-      when: null
+      when: Date.now()
     }
 
     this.tellServerTypingIsHappening = function(typingIsHappening) {
       // tell server typing status only if there's been a change or no activity in a while
       if (this.reportedly.typing != typingIsHappening ||
-          this.reportedly.typing.when < Date.now() - 10000) {
+          this.reportedly.when < Date.now() - 7000) {
         socket.emit(typingIsHappening ? 'typing' : 'not typing', Date.now());
         this.reportedly.typing = typingIsHappening;
+        this.reportedly.when = Date.now();
         console.log('Told server typing status of user is', typingIsHappening, '.');
       }
     };

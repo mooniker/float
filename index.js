@@ -194,7 +194,7 @@ var usersCurrentlyTypingLogbook = {
 function announceUsersTyping() {
   var usernames = [];
   for (var clientId in logbook) {
-    if (usersCurrentlyTypingLogbook[clientId] > Date.now() - 5000) {
+    if (usersCurrentlyTypingLogbook[clientId] > Date.now() - 7000) {
       usernames.push(logbook[clientId]);
     } else if (usersCurrentlyTypingLogbook[clientId] < Date.now - 10000) {
       delete usersCurrentlyTypingLogbook[clientId];
