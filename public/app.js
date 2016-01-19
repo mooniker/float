@@ -167,6 +167,7 @@
     // };
 
     this.typing = function() { // check to see if user has typed something
+      // FIXME maybe have '/' commands be completely ignored instead of  triggering tellServer
       if (this.message.body.trim() === '' || this.message.body[0] === '/') {
         // if user has erased their message or is entering a command
         this.tellServerTypingIsHappening(false);
@@ -177,23 +178,41 @@
       }
     };
 
+    this.command = function(command, args) {
+      switch (command.toLowerCase()) {
+        case 'help':
+          console.log('User asked for help.');
+          break;
+        case 'blah':
+          console.log('Blah blah blah to server.');
+          break;
+        case 'house':
+          console.log('Rename as House of Me');
+      }
+    };
+
     this.send = function(msg) {
       if (this.message.body[0] === '/') {
-        // if (this.message.body.slice(1).split()[0]) // TODO use this to validate commands
-        if (this.message.body.trim() === '/blah') {
-          console.log('blah blah blah');
-          socket.emit('chat message', {
-            timestamp: Date.now(),
-            blah: true
-          });
-          this.message.body = '';
-          this.whenLastTyped = Date.now();
-        } else if (this.message.body.trim() === '/house') {
-          console.log('house');
-          socket.emit('rename me', 'house');
-          this.message.body = '';
-          this.whenLastTyped = Date.now();
-        }
+        // if (this.message.body.slice(1).split()[0])
+        // if (this.message.body.trim() === '/blah') {
+        //   console.log('blah blah blah');
+        //   socket.emit('chat message', {
+        //     timestamp: Date.now(),
+        //     blah: true
+        //   });
+        //   this.message.body = '';
+        //   this.whenLastTyped = Date.now();
+        // } else if (this.message.body.trim() === '/house') {
+        //   console.log('house');
+        //   socket.emit('rename me', 'house');
+        //   this.message.body = '';
+        //   this.whenLastTyped = Date.now();
+        // }
+        var input = this.message.body.slice(1).split(' ');
+        var cmd = input[0];
+        var args = input.slice(1, input.length);
+        this.command(cmd, args);
+        this.message.body = '';
       } else if (this.message.body.trim() != '') {
         socket.emit('chat message', {
           body: this.message.body,
@@ -208,7 +227,7 @@
         this.othersTyping[this.username] = 0;
       } catch(e) { console.log('ERROR:', e); }
       socket.emit('not typing', Date.now());
-      this.refreshEvents();
+      this.refreshEvents(); // FIXME
     };
 
   }]);
