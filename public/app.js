@@ -29,6 +29,10 @@
     var channel = this;
     channel.messages = [];
 
+    $scope.$watchCollection('messages', function(newVal, oldVal) {
+      console.log('WATCHCOLLECTION:', newVal);
+    });
+
     $http.get('/messages').then(
       function successfulCallback(response){
         channel.messages = response.data.messages;
@@ -45,6 +49,7 @@
   }]);
 
   app.controller('MessengerController', ['$scope', 'mySocket', function($scope, socket) {
+
     this.message = {};
     var my = this;
     this.username = '???';
@@ -53,7 +58,8 @@
     this.usersTyping = [];
     this.whenLastTyped = Date.now();
     this.timerId = null;
-    this.lastSentMessage = null;
+    this.lastSentMessageBody = null;
+    this.lastSentMessageTimestamp = null;
     this.whenLast = {
       typing: null, // timestamp
       notTyping: null, // timestamp
@@ -66,7 +72,7 @@
     this.reportedly = { // the last typing message sent to server
       typing: false,
       when: Date.now()
-    }
+    };
 
     this.tellServerTypingIsHappening = function(typingIsHappening) {
       // tell server typing status only if there's been a change or no activity in a while
@@ -79,46 +85,12 @@
       }
     };
 
-    // this.refreshEvents = function() {
-    //   for (var key in this.othersTyping) {
-    //     var list = [];
-    //     if (this.othersTyping[key] > Date.now() - 3000) {
-    //       list.push(key)
-    //     }
-    //     if (list.length === 0) {
-    //       this.othersTypingStatus = '';
-    //     } else if (list.length === 1) {
-    //       this.othersTypingStatus = list[0] + ' is typing.';
-    //     } else if (list.length < 6) {
-    //       this.othersTypingStatus = list.slice(0, list.length - 2).join(', ') + ' and ' + list[list.length - 1] + ' is typing.';
-    //     } else {
-    //       this.othersTypingStatus = 'Many people are typing.';
-    //     }
-    //   }
-    // };
-
     $scope.$on('socket:your username', function (ev, data) {
       my.username = data;
     });
 
-    // socket.on('user typing', function(data) {
-    //   my.othersTyping[data.username] = data.timestamp;
-    //   console.log('user typing:', data);
-    //   my.refreshEvents();
-    // });
-
-    // socket.on('user not typing', function(username) {
-    //   if (username in my.othersTyping) {
-    //     my.othersTyping[username] = 0;
-    //   }
-    //   console.log('user not typing:', username);
-    //   my.refreshEvents();
-    // });
-
     socket.on('event', function(event) {
-      // if (event.hasOwnProperty(usersTyping)) {
-      //   console.log('Server says these folk are typing:', event.usersTyping);
-      // }
+
       console.log('Server says these users are typing:', event.usersTyping);
       my.usersTyping = event.usersTyping;
 
@@ -148,23 +120,7 @@
       // while saying the last known typing users haven't done anything
       // or have the client figure that out or both
 
-
     });
-
-    // this.typing = function() {
-    //   // check to see if user has typed anything
-    //   if (this.message.body.trim() == '') {
-    //     socket.emit('not typing', Date.now());
-    //     console.log('not typing');
-    //     this.whenLastTyped = Date.now();
-    //   }
-    //   // if we've got text and we haven't sent typing request in the past 3 seconds
-    //   else if (this.message.body.trim().length > 0 && Date.now() - this.whenLastTyped > 3000) {
-    //     socket.emit('typing', Date.now());
-    //     this.whenLastTyped = Date.now();
-    //     console.log('typing:', Date.now());
-    //   }
-    // };
 
     this.typing = function() { // check to see if user has typed something
       // FIXME maybe have '/' commands be completely ignored instead of  triggering tellServer
@@ -179,15 +135,20 @@
     };
 
     this.command = function(command, args) {
-      switch (command.toLowerCase()) {
+      var cmd = command.toLowerCase();
+      switch (cmd) {
         case 'help':
-          console.log('User asked for help.');
-          break;
+          // console.log('User asked for help.');
+          // break;
         case 'blah':
-          console.log('Blah blah blah to server.');
-          break;
+          // console.log('Blah blah blah to server.');
+          // break;
         case 'house':
-          console.log('Rename as House of Me');
+          // console.log('Rename as House of Me');
+          socket.emit('request', {
+            cmd: cmd,
+            args: args
+          });
       }
     };
 
@@ -213,21 +174,23 @@
         var args = input.slice(1, input.length);
         this.command(cmd, args);
         this.message.body = '';
-      } else if (this.message.body.trim() != '') {
+      } else if (this.message.body.trim() != '') { // send message
         socket.emit('chat message', {
           body: this.message.body,
           timestamp: Date.now()
         });
+        this.lastSentMessageBody = this.message.body;
+        this.lastSentMessageTimestamp = Date.now();
         this.message.body = '';
-      } else if (this.message.body.trim() === '') {
+      } else if (this.message.body.trim() === '') { // clears and does not send empty text
         this.message.body = '';
-        this.whenLastTyped = Date.now();
+        // this.whenLastTyped = Date.now();
       }
-      try {
-        this.othersTyping[this.username] = 0;
-      } catch(e) { console.log('ERROR:', e); }
-      socket.emit('not typing', Date.now());
-      this.refreshEvents(); // FIXME
+      // try {
+      //   this.othersTyping[this.username] = 0;
+      // } catch(e) { console.log('ERROR:', e); }
+      // socket.emit('not typing', Date.now());
+      this.tellServerTypingIsHappening(false);
     };
 
   }]);
@@ -269,7 +232,7 @@
   app.directive('scrollToBottom', function() {
     return { // FIXME this doesn't seem to do anything
       scope: {
-        scrollToBottom: '='
+        scrollToBottom: '=' // = is obj or array
       },
       link: function(scope, element) {
         scope.$watchCollection('scrollToBottom', function(newValue) {

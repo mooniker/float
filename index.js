@@ -264,6 +264,8 @@ function yourUsername(socketId, clientId) {
 io.on('connection', function(socket) {
 
   var socketId = socket.id;
+  logBroadcast(socket.handshake.headers['user-agent']);
+  logBroadcast(socket.handshake.address);
 
   // console.log('socket.id', socket.id, 'socket.client.id', socket.client.id);
 
@@ -356,6 +358,22 @@ io.on('connection', function(socket) {
       };
       io.emit('chat message', newMessage);
     }
+  });
+
+  socket.on('request', function(req) {
+    try {
+      switch (req.cmd) {
+        case 'help':
+          // io.sockets.connected[socket.id].emit('chat message', {
+          io.sockets.connected[socket.id].emit('chat message', {
+            username: '*float system*',
+            body: 'Available commands: ' +
+                  '"/help" for HELP ' +
+                  '"/blah" to produce random text',
+            timestamp: Date.now()
+          });
+      }
+    } catch(e) { console.log('Not a command.'); }
   });
 
   socket.on('disconnect', function() {
