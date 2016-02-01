@@ -44,7 +44,7 @@
 
           <div data-ng-controller="MessengerController as messenger" id="messenger">
 
-            <ul id="#message-box" class="list-group-item" data-scroll-to-bottom>
+            <ul id="#message-box" class="list-group-item" data-ng-scroll-bottom>
               <li data-chat-message data-ng-repeat="message in channel.messages" class="list-group-item"></li>
               <li id="currently-typing" class="list-group-item">{{messenger.othersTypingStatus}}</li>
             <!-- </ul> -->

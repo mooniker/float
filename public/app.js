@@ -229,19 +229,37 @@
     };
   });
 
-  app.directive('scrollToBottom', function() {
-    return { // FIXME this doesn't seem to do anything
+  // app.directive('scrollToBottom', function() {
+  //   return { // FIXME this doesn't seem to do anything
+  //     scope: {
+  //       scrollToBottom: '=' // = is obj or array
+  //     },
+  //     link: function($scope, $element) {
+  //       $scope.$watchCollection('scrollToBottom', function(newValue) {
+  //         if (newValue) {
+  //           $element.scrollTop($element[0].scrollHeight);
+  //         }
+  //       });
+  //     }
+  //   };
+  // });
+
+  app.directive('ngScrollBottom', ['$timeout', function ($timeout) {
+    return {
       scope: {
-        scrollToBottom: '=' // = is obj or array
+        ngScrollBottom: "="
       },
-      link: function(scope, element) {
-        scope.$watchCollection('scrollToBottom', function(newValue) {
+      link: function ($scope, $element) {
+        $scope.$watchCollection('ngScrollBottom', function (newValue) {
           if (newValue) {
-            $(element).scrollTop($(element)[0].scrollHeight);
+            $timeout(function(){
+              $element.scrollTop($element[0].scrollHeight);
+            }, 0);
           }
         });
       }
     };
-  });
+  }]);
+
 
 })();
