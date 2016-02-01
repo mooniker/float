@@ -15,7 +15,8 @@
     return mySocket;
   });
 
-  app.controller('MyController', ['$scope', function($scope) {
+  // UserController handles stuff user stuff pertaining to this user
+  app.controller('UserController', ['$scope', function($scope) {
     var my = this;
     my.username = '???';
 
@@ -25,22 +26,22 @@
 
   }]);
 
-  app.controller('ChannelController', ['$scope', '$http', function($scope, $http) {
+  app.controller('ChannelController', ['$scope', '$http', 'mySocket', function(scope, http, socket) {
     var channel = this;
     channel.messages = [];
 
-    $scope.$watchCollection('messages', function(newVal, oldVal) {
-      console.log('WATCHCOLLECTION:', newVal);
-    });
+    // $scope.$watchCollection('channel.messages', function(newVal, oldVal) {
+    //   console.log('WATCHCOLLECTION:', newVal);
+    // });
 
-    $http.get('/messages').then(
+    http.get('/messages').then(
       function successfulCallback(response){
         channel.messages = response.data.messages;
       }, function notSuccessfulCallback(response){
         // sad face
     });
 
-    $scope.$on('socket:chat message', function(ev, msg) {
+    scope.$on('socket:chat message', function(ev, msg) {
       channel.messages.push(msg);
       console.log('Received:', msg);
       // TODO want the message box to be scrolled to the bottom
@@ -195,6 +196,7 @@
 
   }]);
 
+  // UserIndexController handles the buddle list
   app.controller('UserIndexController', ['$http', 'mySocket', function($http, socket) {
     var userList = this;
     userList.usernames = [];
@@ -250,7 +252,7 @@
         ngScrollBottom: "="
       },
       link: function ($scope, $element) {
-        $scope.$watchCollection('ngScrollBottom', function (newValue) {
+        $scope.$watchCollection('channel.messages', function (newValue) {
           if (newValue) {
             $timeout(function(){
               $element.scrollTop($element[0].scrollHeight);
