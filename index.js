@@ -191,20 +191,29 @@ var usersCurrentlyTypingLogbook = {
   // etc
 };
 
-// maybe don't need this
-// function getListOfTypers() {
-//   var list = [];
-//   for (key in usersCurrentlyTypingLogbook) {
-//     if (usersCurrentlyTypingLogbook[key] < Date.now() - 3000) {
-//       try {
-//         delete usersCurrentlyTypingLogbook[key];
-//       } catch(err) { console.error(err); }
-//     } else {
-//       list.push(logbook[key]);
-//     }
-//   }
-//   return list;
-// }
+var eventRefresher;
+
+function announceUsersTyping() {
+  var usernames = [];
+  for (var clientId in logbook) {
+    if (usersCurrentlyTypingLogbook[clientId] > Date.now() - 7000) {
+      usernames.push(logbook[clientId]);
+    } else if (usersCurrentlyTypingLogbook[clientId] < Date.now - 10000) {
+      delete usersCurrentlyTypingLogbook[clientId];
+    }
+  }
+  var newEvent = {
+    usersTyping: usernames
+  };
+  io.emit('event', newEvent);
+  logBroadcast(newEvent);
+  console.log(newEvent);
+
+  clearTimeout(eventRefresher); // clear the event announcer timer
+  // announce events again in 4 seconds if needed
+  if (Object.keys(usersCurrentlyTypingLogbook).length > 0)
+    eventRefresher = setTimeout(announceUsersTyping, 4000);
+}
 
 function getCurrentUsernames() {
   var usernames = [];
@@ -255,6 +264,8 @@ function yourUsername(socketId, clientId) {
 io.on('connection', function(socket) {
 
   var socketId = socket.id;
+  logBroadcast(socket.handshake.headers['user-agent']);
+  logBroadcast(socket.handshake.address);
 
   // console.log('socket.id', socket.id, 'socket.client.id', socket.client.id);
 
@@ -288,63 +299,103 @@ io.on('connection', function(socket) {
   //   yourUsername(socket.id, socket.client.id);
   // });
 
-  socket.on('chat message', function(msg) {
-
+  function processMessage(msg) {
     var newMessage = {
-      // user_id: currentUser._id,
-      username: logbook[socket.client.id],
+      username: 'username' in msg ? msg.username : logbook[socket.client.id],
       body: 'blah' in msg ? chance.sentence() : msg.body,
-      sent_at: msg.timestamp,
+      sent_at: msg.timestamp
     };
 
     new MessageModel(newMessage).save(function(msgSaveError) {
       if (msgSaveError) {
         console.error('msgSaveError:', msgSaveError);
-        logBroadcast('msgSaveError');
-        // TODO send error message back to sender
+        io.sockets.connected[socket.id].emit('Failed to send your message: ' + newMessage.body);
       } else {
-        // broadcast message after saving to database
-        // delete newMessage.user_id;
-        console.log(newMessage);
-        // newMessage.username = currentUser.username;
         newMessage.timestamp = Date.now();
-        logBroadcast('Server received and saved', newMessage);
         io.emit('chat message', newMessage);
       }
     });
+  }
+
+  socket.on('chat message', function(msg) {
+
+    processMessage(msg);
 
   });
-
-  // socket.on('user typing', function(time) {
-  //   if (!(socket.client.id in usersCurrentlyTypingLogbook)) {
-  //     usersCurrentlyTypingLogbook[socket.client.id] = time;
-  //     socket.emit('users typing', getListOfTypers());
-  //   } else if (usersCurrentlyTypingLogbook[socket.client.id] < Date.now() - 2000) {
-  //     // socket.emit('users typing', { typing: logbook[socket.client.id] });
-  //     socket.emit('users typing', getListOfTypers());
-  //   }
-  // });
 
   socket.on('typing', function(time) {
-    console.log('user says she is typing.');
-    io.emit('user typing', {
-      username: logbook[socket.client.id],
-      timestamp: time
-    });
+    // console.log('user says she is typing.');
+    // io.emit('user typing', {
+    //   username: logbook[socket.client.id],
+    //   timestamp: time
+    // });
+    usersCurrentlyTypingLogbook[socket.client.id] = time;
+    announceUsersTyping();
+
   });
 
-  // socket.on('user not typing', function(data) {
-  //   try {
-  //     delete usersCurrentlyTypingLogbook[socket.client.id];
-  //     socket.emit('users typing', getListOfTypers());
-  //   } catch(err) {
-  //     console.error(error);
-  //   }
-  // });
-
   socket.on('not typing', function(time) {
-    console.log('user says she isnt typing.');
-    io.emit('user not typing', logbook[socket.client.id]);
+    // console.log('user says she isnt typing.');
+    // io.emit('user not typing', logbook[socket.client.id]);
+    usersCurrentlyTypingLogbook[socket.client.id] = 0;
+    delete usersCurrentlyTypingLogbook[socket.client.id];
+    announceUsersTyping();
+  });
+
+  socket.on('rename me', function(house) {
+    console.log('user wants to be renamed');
+    if (socket.client.id in logbook) {
+      var oldName = logbook[socket.client.id];
+      logbook[socket.client.id] = 'House of ' + logbook[socket.client.id];
+      yourUsername(socket.id, socket.client.id);
+      var newMessage = {
+        username: 'FLOAT SYSTEM',
+        body: oldName + ' is now called ' + logbook[socket.client.id] + '.',
+        sent_at: Date.now(),
+      };
+      io.emit('chat message', newMessage);
+    }
+  });
+
+  socket.on('request', function(req) {
+    try {
+      switch (req.cmd) {
+        case 'help':
+          // io.sockets.connected[socket.id].emit('chat message', {
+          io.sockets.connected[socket.id].emit('chat message', {
+            username: '*float system*',
+            body: 'Available commands:' +
+                  '"/help" for HELP ' +
+                  '"/blah" to produce random text',
+            timestamp: Date.now()
+          });
+          break;
+        case 'blah':
+          processMessage({
+            blah: true,
+            timestamp: req.timestamp,
+          });
+          break;
+        case 'house':
+          if (socket.client.id in logbook) {
+            var oldName = logbook[socket.client.id];
+            if (oldName.slice(0, 9) === 'House of ') {
+              io.sockets.connected[socket.id].emit('chat message', {
+                username: '*float system*',
+                body: 'Greetings to the ' + oldName + '.'
+              });
+            } else {
+              logbook[socket.client.id] = 'House of ' + logbook[socket.client.id];
+              yourUsername(socket.id, socket.client.id);
+              processMessage({
+                username: '*float system*',
+                body: oldName + ' is now called ' + logbook[socket.client.id] + '.',
+                sent_at: Date.now(),
+              });
+            }
+          }
+      }
+    } catch(e) { console.log('Not a command.'); }
   });
 
   socket.on('disconnect', function() {

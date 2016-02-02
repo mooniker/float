@@ -1,7 +1,7 @@
 {
   "name": "float",
   "version": "0.0.0",
-  "description": "Slack-like instant messaging server and client software",
+  "description": "A MEAN real-time multi-user messenger built with WebSockets and inspired by Slack",
   "main": "index.js",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",

@@ -6,3 +6,28 @@ body { font: 13px Helvetica, Arial; }
 #messages-box { list-style-type: none; margin: 1em auto 10em; padding: 0; overflow-y: scroll; }
 #messages-box li { padding: 5px 10px; }
 #messages-box li:nth-child(odd) { background: #eee; }*/
+
+#chats-box {
+  overflow: scroll;
+  height: 80vh;
+}
+
+#message_body {
+  width: 60%;
+}
+
+#message-submit {
+  display: hidden;
+}
+
+#currently-typing {
+  min-height: 3em;
+}
+
+#messenger-form {
+  padding-left: 50px;
+}
+
+/* TODO http://stackoverflow.com/questions/1032914/how-to-make-a-div-to-fill-a-remaining-horizontal-space
+         ^ may fix the width of the message bar
+*/
