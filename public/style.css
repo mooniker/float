@@ -24,6 +24,10 @@ body { font: 13px Helvetica, Arial; }
   min-height: 3em;
 }
 
+#messenger-form {
+  padding-left: 50px;
+}
+
 /* TODO http://stackoverflow.com/questions/1032914/how-to-make-a-div-to-fill-a-remaining-horizontal-space
          ^ may fix the width of the message bar
 */
