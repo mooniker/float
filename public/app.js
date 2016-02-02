@@ -113,13 +113,6 @@
           channel.othersTypingStatus = 'Many people (and someone\'s mother) are typing';
       }
 
-      // TODO at this point, message stays the same until the server sends an
-      // updated list of typing users, which doesn't happen if users just leave
-      // unsent text in their messager input fields.
-      // in that case, we should either have the server send a message after a
-      // while saying the last known typing users haven't done anything
-      // or have the client figure that out or both
-
     });
 
     this.typing = function() { // check to see if user has typed something
