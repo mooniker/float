@@ -363,7 +363,7 @@ io.on('connection', function(socket) {
         case 'help':
           // io.sockets.connected[socket.id].emit('chat message', {
           io.sockets.connected[socket.id].emit('chat message', {
-            username: '*float system*',
+            username: '*system*',
             body: 'Available commands:' +
                   '"/help" for HELP ' +
                   '"/blah" to produce random text',
@@ -381,21 +381,51 @@ io.on('connection', function(socket) {
             var oldName = logbook[socket.client.id];
             if (oldName.slice(0, 9) === 'House of ') {
               io.sockets.connected[socket.id].emit('chat message', {
-                username: '*float system*',
+                username: '*system*',
                 body: 'Greetings to the ' + oldName + '.'
               });
             } else {
               logbook[socket.client.id] = 'House of ' + logbook[socket.client.id];
               yourUsername(socket.id, socket.client.id);
               processMessage({
-                username: '*float system*',
+                username: '*system*',
                 body: oldName + ' is now called ' + logbook[socket.client.id] + '.',
                 sent_at: Date.now(),
               });
             }
           }
+          break;
+        case 'nick':
+        case 'callme':
+          if (socket.client.id in logbook) {
+            // first let's validate the requested name
+            for (var key in logbook) {
+              if (logbook[key] === req.args.join('_').trim()) {
+                io.sockets.connected[socket.id].emit('chat message', {
+                  username: '*system*',
+                  body: req.args.join('_').trim() + ' is already the name of an existing user.',
+                  timestamp: Date.now()
+                });
+                console.log('User\'s request for rename to existing username denied.');
+                return; // hope this breaks out of this case ant not just for loop
+              }
+            }
+            var oldName = logbook[socket.client.id];
+            logbook[socket.client.id] = req.args.join('_'); // get rid of spaces FIXME need to regulate screenames in a better way
+            console.log(oldName, 'has been renamed to', logbook[socket.client.id]);
+            yourUsername(socket.id, socket.client.id);
+            processMessage({
+              username: '*system*',
+              body: oldName + ' is now called ' + logbook[socket.client.id] + '.',
+              sent_at: Date.now(),
+            });
+            // announce new user to everyone
+            io.emit('current users', getCurrentUsernames());
+
+          }
+          break;
       }
-    } catch(e) { console.log('Not a command.'); }
+    } catch(e) { console.log('Not a command.', e); }
   });
 
   socket.on('disconnect', function() {

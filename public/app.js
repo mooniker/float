@@ -138,13 +138,17 @@
           // break;
         case 'house':
           // console.log('Rename as House of Me');
+        case 'callme':
+        case 'nick':
+          console.log('sent request to server:', cmd, args)
           socket.emit('request', {
             cmd: cmd,
             args: args,
             timestamp: Date.now()
           });
           break;
-
+        default:
+          // TODO some error message to user: invalid command
       }
     };
 
