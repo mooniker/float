@@ -14,37 +14,41 @@
     return mySocket;
   });
 
-  // app.directive('ngScrollBottom', function() {
-  //   return { // FIXME this doesn't seem to do anything
-  //     scope: {
-  //       ngScrollBottom: '=' // = is obj or array
-  //     },
-  //     link: function($scope, $element) {
-  //       $scope.$watchCollection('ngScrollBottom', function(newValue) {
-  //         if (newValue) {
-  //           $element.scrollTop($element[0].scrollHeight);
-  //         }
-  //       });
-  //     }
-  //   };
-  // });
-
-  app.directive('ngScrollBottom', ['$timeout', function ($timeout) {
-    return {
+  app.directive('scrollBottom', function() {
+    console.log('scrollBot');
+    return { // FIXME this doesn't seem to do anything
       scope: {
-        ngScrollBottom: "="
+        scrollBottom: '=' // = is obj or array
       },
-      link: function ($scope, $element) {
-        $scope.$watchCollection('ngScrollBottom', function (newValue) {
+      link: function($scope, $element) {
+        $scope.$watchCollection('scrollBottom', function(newValue) {
           if (newValue) {
-            $timeout(function(){
-              $element.scrollTop($element[0].scrollHeight);
-            }, 0);
+            $element.scrollTop($element[0].scrollHeight);
+            console.log($($element[0]).scrollTop());
+            $element[0].style.color = 'red';
           }
         });
       }
     };
-  }]);
+  });
+
+  // app.directive('scrollBottom', ['$timeout', function ($timeout) {
+  //   console.log('scrollBot');
+  //   return {
+  //     scope: {
+  //       scrollBottom: '='
+  //     },
+  //     link: function ($scope, $element) {
+  //       $scope.$watchCollection('scrollBottom', function(newValue) {
+  //         if (newValue) {
+  //           $timeout(function() {
+  //             $element.scrollTop($element[0].scrollHeight);
+  //           }, 0);
+  //         }
+  //       });
+  //     }
+  //   };
+  // }]);
 
   // UserController handles stuff user stuff pertaining to this user
   app.controller('UserController', ['$scope', function(scope) {

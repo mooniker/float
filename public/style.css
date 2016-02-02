@@ -7,7 +7,7 @@ body { font: 13px Helvetica, Arial; }
 #messages-box li { padding: 5px 10px; }
 #messages-box li:nth-child(odd) { background: #eee; }*/
 
-#messenger {
+#chats-box {
   overflow: scroll;
   height: 80vh;
 }
