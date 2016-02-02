@@ -47,7 +47,7 @@ server.use(passport.session());
 server.use(flash());
 
 // passport config
-var UserModel = require('./models/user');
+// var UserModel = require('./models/user');
 // passport.use(new LocalStrategy(UserModel.authenticate()));
 // passport.serializeUser(UserModel.serializeUser());
 // passport.deserializeUser(UserModel.deserializeUser());
@@ -100,30 +100,6 @@ var helpers = {
     response.locals.currentUser = request.user;
     next();
 
-  },
-
-  authenticatedUser: function(request, response, next) {
-
-    if ( request.isAuthenticated() ) {
-      return next();
-    } else {
-      // response.redirect('/login');
-      console.log('unauthenticated user directed to welcome page');
-      // response.render('welcome');
-      response.redirect('/');
-    }
-
-  },
-
-  authenticatedUserFetch: function(request, response, next) {
-
-    if ( request.isAuthenticated() ) {
-      console.log('unauthenticated fetch');
-      return next();
-    } else {
-      console.log('unauthenticated fetch');
-      response.render('401', { status : 401 } );
-    }
   }
 
 };
@@ -144,42 +120,12 @@ server.route('/vanilla')
     response.render('public');
   });
 
-// server.route('/')
-//   .get(function(request, response) {
-//     response.render('welcome', { message : request.flash('homeMessage') });
-//   });
-
-// server.route('/signup')
-//   .get(usersCtrl.getSignup)
-//   .post(usersCtrl.postSignup);
-//
-// server.route('/login')
-//   .get(usersCtrl.getLogin)
-//   .post(usersCtrl.postLogin);
-//
-// server.route('/logout')
-//   .get(helpers.authenticatedUser, usersCtrl.getLogout);
-//
 server.route('/messages')
   .get(messagesCtrl.getMessages) // FIXME require auth
   .post(messagesCtrl.postMessage); // FIXME testing angular
-//
-// server.route('/home')
-//   .get(helpers.authenticatedUser, function(request, response) {
-//     response.render('home', { message : request.flash('homeMessage') });
-//     logBroadcast('homepage!');
-//   });
-//
-// server.route('/profile')
-//   .get(helpers.authenticatedUser, usersCtrl.getProfile)
-//   .post(helpers.authenticatedUser, usersCtrl.postProfile);
-
-function logBroadcast(msg) {
-  console.log(msg);
-  io.emit('debug message', '* server log: ' + msg);
-}
 
 var MessageModel = require('./models/message');
+// var CurrentUserModel = require('./models/current_user');
 
 var usersConnected = 0;
 var logbook = {};
@@ -206,8 +152,6 @@ function announceUsersTyping() {
     usersTyping: usernames
   };
   io.emit('event', newEvent);
-  logBroadcast(newEvent);
-  console.log(newEvent);
 
   clearTimeout(eventRefresher); // clear the event announcer timer
   // announce events again in 4 seconds if needed
@@ -264,10 +208,6 @@ function yourUsername(socketId, clientId) {
 io.on('connection', function(socket) {
 
   var socketId = socket.id;
-  logBroadcast(socket.handshake.headers['user-agent']);
-  logBroadcast(socket.handshake.address);
-
-  // console.log('socket.id', socket.id, 'socket.client.id', socket.client.id);
 
   if (!logbook.hasOwnProperty(socket.client.id)) {
     logbook[socket.client.id] = chance.capitalize(chance.word());
@@ -279,10 +219,6 @@ io.on('connection', function(socket) {
   // send that user her username
   yourUsername(socket.id, socket.client.id);
 
-  // io.emit('user intro', {
-  //   username: logbook[socket.client.id]
-  // });
-
   usersConnected += 1;
   var msg = 'A user named ' + logbook[socket.client.id] + ' connected. ' + totalUsersMsg(usersConnected);
   // console.log(msg);
@@ -290,14 +226,6 @@ io.on('connection', function(socket) {
 
   // announce new user to everyone
   io.emit('current users', getCurrentUsernames());
-
-  // TODO figure out how to not accept websocket connections from unauth'd users
-
-  logBroadcast(msg);
-
-  // socket.on('my username', function(msg) {
-  //   yourUsername(socket.id, socket.client.id);
-  // });
 
   function processMessage(msg) {
     var newMessage = {
@@ -324,41 +252,19 @@ io.on('connection', function(socket) {
   });
 
   socket.on('typing', function(time) {
-    // console.log('user says she is typing.');
-    // io.emit('user typing', {
-    //   username: logbook[socket.client.id],
-    //   timestamp: time
-    // });
     usersCurrentlyTypingLogbook[socket.client.id] = time;
     announceUsersTyping();
 
   });
 
   socket.on('not typing', function(time) {
-    // console.log('user says she isnt typing.');
-    // io.emit('user not typing', logbook[socket.client.id]);
     usersCurrentlyTypingLogbook[socket.client.id] = 0;
     delete usersCurrentlyTypingLogbook[socket.client.id];
     announceUsersTyping();
   });
 
-  socket.on('rename me', function(house) {
-    console.log('user wants to be renamed');
-    if (socket.client.id in logbook) {
-      var oldName = logbook[socket.client.id];
-      logbook[socket.client.id] = 'House of ' + logbook[socket.client.id];
-      yourUsername(socket.id, socket.client.id);
-      var newMessage = {
-        username: 'FLOAT SYSTEM',
-        body: oldName + ' is now called ' + logbook[socket.client.id] + '.',
-        sent_at: Date.now(),
-      };
-      io.emit('chat message', newMessage);
-    }
-  });
-
   socket.on('request', function(req) {
-    try {
+    try { // FIXME is this try block needed?
       switch (req.cmd) {
         case 'help':
           // io.sockets.connected[socket.id].emit('chat message', {
@@ -439,9 +345,6 @@ io.on('connection', function(socket) {
 
     var msg = logbook[socket.client.id] + ' disconnected. ' + totalUsersMsg(usersConnected);
 
-    // console.log(msg);
-    // io.emit('debug message', msg);
-    logBroadcast(msg);
     delete logbook[socket.client.id];
   });
 });
