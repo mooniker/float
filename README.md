@@ -4,7 +4,7 @@ Float Messenger is web-based instant messaging server and client software for sm
 
 ## Why 'Float'?
 
-[According to Wikipedia](https://en.wikipedia.org/wiki/Float_(project_management)), "**float** or **slack** is the amount of time that a task in a project network can be delayed without causing a delay" to subsequent tasks or project completion. And because there's no end to functionality that could be added or redone in this project, the challenge is keeping it buoyant.
+[According to Wikipedia](https://en.wikipedia.org/wiki/Float_(project_management)), "**float** or **slack** is the amount of time that a task in a project network can be delayed without causing a delay" to subsequent tasks or project completion. And because there's no end to functionality that could be added or redone in this project, the challenge is keeping it buoyant (or not giving it too much slack).
 
 ## Demo mode
 
