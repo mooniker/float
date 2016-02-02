@@ -299,30 +299,27 @@ io.on('connection', function(socket) {
   //   yourUsername(socket.id, socket.client.id);
   // });
 
-  socket.on('chat message', function(msg) {
-
+  function processMessage(msg) {
     var newMessage = {
-      // user_id: currentUser._id,
-      username: logbook[socket.client.id],
+      username: 'username' in msg ? msg.username : logbook[socket.client.id],
       body: 'blah' in msg ? chance.sentence() : msg.body,
-      sent_at: msg.timestamp,
+      sent_at: msg.timestamp
     };
 
     new MessageModel(newMessage).save(function(msgSaveError) {
       if (msgSaveError) {
         console.error('msgSaveError:', msgSaveError);
-        logBroadcast('msgSaveError');
-        // TODO send error message back to sender
+        io.sockets.connected[socket.id].emit('Failed to send your message: ' + newMessage.body);
       } else {
-        // broadcast message after saving to database
-        // delete newMessage.user_id;
-        console.log(newMessage);
-        // newMessage.username = currentUser.username;
         newMessage.timestamp = Date.now();
-        logBroadcast('Server received and saved', newMessage);
         io.emit('chat message', newMessage);
       }
     });
+  }
+
+  socket.on('chat message', function(msg) {
+
+    processMessage(msg);
 
   });
 
@@ -367,11 +364,36 @@ io.on('connection', function(socket) {
           // io.sockets.connected[socket.id].emit('chat message', {
           io.sockets.connected[socket.id].emit('chat message', {
             username: '*float system*',
-            body: 'Available commands: ' +
+            body: 'Available commands:' +
                   '"/help" for HELP ' +
                   '"/blah" to produce random text',
             timestamp: Date.now()
           });
+          break;
+        case 'blah':
+          processMessage({
+            blah: true,
+            timestamp: req.timestamp,
+          });
+          break;
+        case 'house':
+          if (socket.client.id in logbook) {
+            var oldName = logbook[socket.client.id];
+            if (oldName.slice(0, 9) === 'House of ') {
+              io.sockets.connected[socket.id].emit('chat message', {
+                username: '*float system*',
+                body: 'Greetings to the ' + oldName + '.'
+              });
+            } else {
+              logbook[socket.client.id] = 'House of ' + logbook[socket.client.id];
+              yourUsername(socket.id, socket.client.id);
+              processMessage({
+                username: '*float system*',
+                body: oldName + ' is now called ' + logbook[socket.client.id] + '.',
+                sent_at: Date.now(),
+              });
+            }
+          }
       }
     } catch(e) { console.log('Not a command.'); }
   });

@@ -147,8 +147,11 @@
           // console.log('Rename as House of Me');
           socket.emit('request', {
             cmd: cmd,
-            args: args
+            args: args,
+            timestamp: Date.now()
           });
+          break;
+
       }
     };
 
