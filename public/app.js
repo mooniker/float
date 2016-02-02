@@ -14,24 +14,6 @@
     return mySocket;
   });
 
-  // app.directive('scrollBottom', function() {
-  //   console.log('scrollBot');
-  //   return { // FIXME this doesn't seem to do anything
-  //     scope: {
-  //       scrollBottom: '=' // = is obj or array
-  //     },
-  //     link: function($scope, $element) {
-  //       $scope.$watchCollection('scrollBottom', function(newValue) {
-  //         if (newValue) {
-  //           $element.scrollTop($element[0].scrollHeight);
-  //           console.log($($element[0]).scrollTop());
-  //           $element[0].style.color = 'red';
-  //         }
-  //       });
-  //     }
-  //   };
-  // });
-
   app.directive('scrollBottom', ['$timeout', function ($timeout) {
     console.log('scrollBot');
     return {
