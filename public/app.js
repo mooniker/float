@@ -14,6 +14,38 @@
     return mySocket;
   });
 
+  // app.directive('ngScrollBottom', function() {
+  //   return { // FIXME this doesn't seem to do anything
+  //     scope: {
+  //       ngScrollBottom: '=' // = is obj or array
+  //     },
+  //     link: function($scope, $element) {
+  //       $scope.$watchCollection('ngScrollBottom', function(newValue) {
+  //         if (newValue) {
+  //           $element.scrollTop($element[0].scrollHeight);
+  //         }
+  //       });
+  //     }
+  //   };
+  // });
+
+  app.directive('ngScrollBottom', ['$timeout', function ($timeout) {
+    return {
+      scope: {
+        ngScrollBottom: "="
+      },
+      link: function ($scope, $element) {
+        $scope.$watchCollection('ngScrollBottom', function (newValue) {
+          if (newValue) {
+            $timeout(function(){
+              $element.scrollTop($element[0].scrollHeight);
+            }, 0);
+          }
+        });
+      }
+    };
+  }]);
+
   // UserController handles stuff user stuff pertaining to this user
   app.controller('UserController', ['$scope', function(scope) {
     var my = this;
@@ -41,38 +73,20 @@
         // sad face
     });
 
-    // scope.$on('socket:chat message', function(ev, msg) {
-    //   channel.messages.push(msg);
-    //   console.log('Received:', msg);
-    //   // TODO want the message box to be scrolled to the bottom
-    // });
-
+    // Receie chat messages from server
     socket.on('chat message', function(msg) {
       channel.messages.push(msg);
       console.log('Received:', msg);
       // TODO want message box to be auto scrolled to bottom.
     });
 
-    this.message = {};
-    // var my = this;
-    this.username = '???';
-    this.othersTyping = {};
-    this.othersTypingStatus = '';
-    this.usersTyping = [];
-    this.whenLastTyped = Date.now();
-    this.timerId = null;
-    this.lastSentMessageBody = null;
-    this.lastSentMessageTimestamp = null;
-    this.whenLast = {
-      typing: null, // timestamp
-      notTyping: null, // timestamp
-      chatMessage: {
-        body: null,
-        timestamp: null,
-        roger: false // boolean
-      }
-    };
-    this.reportedly = { // the last typing message sent to server
+    channel.message = {}; // ng-model for message user inputs
+    channel.username = '???'; // user's username to be assigned by server
+    channel.othersTypingStatus = '';
+    channel.usersTyping = [];
+    channel.lastSentMessageBody = null;
+    channel.lastSentMessageTimestamp = null;
+    channel.reportedly = { // the last typing message sent to server
       typing: false,
       when: Date.now()
     };
@@ -152,44 +166,34 @@
       }
     };
 
-    this.send = function(msg) {
+    this.clearInput = function() {
+      channel.message.body = '';
+    };
+
+    this.send = function() {
+      socket.emit('chat message', {
+        body: channel.message.body,
+        timestamp: Date.now()
+      });
+      channel.lastSentMessageBody = channel.message.body;
+      channel.lastSentMessageTimestamp = Date.now();
+      channel.clearInput();
+    };
+
+    this.getInput = function() {
       if (channel.message.body[0] === '/') {
-        // if (this.message.body.slice(1).split()[0])
-        // if (this.message.body.trim() === '/blah') {
-        //   console.log('blah blah blah');
-        //   socket.emit('chat message', {
-        //     timestamp: Date.now(),
-        //     blah: true
-        //   });
-        //   this.message.body = '';
-        //   this.whenLastTyped = Date.now();
-        // } else if (this.message.body.trim() === '/house') {
-        //   console.log('house');
-        //   socket.emit('rename me', 'house');
-        //   this.message.body = '';
-        //   this.whenLastTyped = Date.now();
-        // }
+        // if input starts with '/', chop it up and send to server as command
         var input = channel.message.body.slice(1).split(' ');
         var cmd = input[0];
         var args = input.slice(1, input.length);
         channel.command(cmd, args);
-        channel.message.body = '';
+        channel.clearInput();
       } else if (channel.message.body.trim() != '') { // send message
-        socket.emit('chat message', {
-          body: channel.message.body,
-          timestamp: Date.now()
-        });
-        channel.lastSentMessageBody = channel.message.body;
-        channel.lastSentMessageTimestamp = Date.now();
-        channel.message.body = '';
-      } else if (channel.message.body.trim() === '') { // clears and does not send empty text
-        channel.message.body = '';
-        // this.whenLastTyped = Date.now();
+        channel.send();
       }
-      // try {
-      //   this.othersTyping[this.username] = 0;
-      // } catch(e) { console.log('ERROR:', e); }
-      // socket.emit('not typing', Date.now());
+      // else if (channel.message.body.trim() === '') { // clears and does not send empty text
+      //   channel.clearInput();
+      // }
       channel.tellServerTypingIsHappening(false);
     };
 
@@ -229,38 +233,5 @@
       templateUrl: 'username.html'
     };
   });
-
-  // app.directive('scrollToBottom', function() {
-  //   return { // FIXME this doesn't seem to do anything
-  //     scope: {
-  //       scrollToBottom: '=' // = is obj or array
-  //     },
-  //     link: function($scope, $element) {
-  //       $scope.$watchCollection('scrollToBottom', function(newValue) {
-  //         if (newValue) {
-  //           $element.scrollTop($element[0].scrollHeight);
-  //         }
-  //       });
-  //     }
-  //   };
-  // });
-
-  app.directive('ngScrollBottom', ['$timeout', function ($timeout) {
-    return {
-      scope: {
-        ngScrollBottom: "="
-      },
-      link: function ($scope, $element) {
-        $scope.$watchCollection('channel.messages', function (newValue) {
-          if (newValue) {
-            $timeout(function(){
-              $element.scrollTop($element[0].scrollHeight);
-            }, 0);
-          }
-        });
-      }
-    };
-  }]);
-
 
 })();

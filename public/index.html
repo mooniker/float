@@ -53,7 +53,7 @@
               <form id="messenger-form" novalidate>
                 <label for="message_body" title="That's you!"><strong>{{channel.username}}</strong></label>
                 <input type="text" name="message_body" id="message_body" data-ng-model="channel.message.body" autofocus autocomplete="off" placeholder="send the people a message from here" data-ng-change="channel.typing()">
-                <button data-ng-click="channel.send(message)" id="#message-submit">send</button>
+                <button data-ng-click="channel.getInput(message)" id="#message-submit">send</button>
               </form>
             </div>
           </div><!-- end #messenger -->
