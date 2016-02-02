@@ -8,19 +8,18 @@
 
   app.factory('mySocket', function(socketFactory) {
     var mySocket = socketFactory();
-    mySocket.forward('error');
+    // mySocket.forward('error');
     mySocket.forward('your username');
-    mySocket.forward('chat message');
-
+    // mySocket.forward('chat message');
     return mySocket;
   });
 
   // UserController handles stuff user stuff pertaining to this user
-  app.controller('UserController', ['$scope', function($scope) {
+  app.controller('UserController', ['$scope', function(scope) {
     var my = this;
     my.username = '???';
 
-    $scope.$on('socket:your username', function (ev, data) {
+    scope.$on('socket:your username', function (ev, data) {
       my.username = data;
     });
 
@@ -34,6 +33,7 @@
     //   console.log('WATCHCOLLECTION:', newVal);
     // });
 
+    // Get recent message from server
     http.get('/messages').then(
       function successfulCallback(response){
         channel.messages = response.data.messages;
@@ -41,18 +41,20 @@
         // sad face
     });
 
-    scope.$on('socket:chat message', function(ev, msg) {
+    // scope.$on('socket:chat message', function(ev, msg) {
+    //   channel.messages.push(msg);
+    //   console.log('Received:', msg);
+    //   // TODO want the message box to be scrolled to the bottom
+    // });
+
+    socket.on('chat message', function(msg) {
       channel.messages.push(msg);
       console.log('Received:', msg);
-      // TODO want the message box to be scrolled to the bottom
+      // TODO want message box to be auto scrolled to bottom.
     });
 
-  }]);
-
-  app.controller('MessengerController', ['$scope', 'mySocket', function($scope, socket) {
-
     this.message = {};
-    var my = this;
+    // var my = this;
     this.username = '???';
     this.othersTyping = {};
     this.othersTypingStatus = '';
@@ -77,41 +79,38 @@
 
     this.tellServerTypingIsHappening = function(typingIsHappening) {
       // tell server typing status only if there's been a change or no activity in a while
-      if (this.reportedly.typing != typingIsHappening ||
-          this.reportedly.when < Date.now() - 7000) {
+      if (channel.reportedly.typing != typingIsHappening ||
+          channel.reportedly.when < Date.now() - 7000) {
         socket.emit(typingIsHappening ? 'typing' : 'not typing', Date.now());
-        this.reportedly.typing = typingIsHappening;
-        this.reportedly.when = Date.now();
+        channel.reportedly.typing = typingIsHappening;
+        channel.reportedly.when = Date.now();
         console.log('Told server typing status of user is', typingIsHappening, '.');
       }
     };
 
-    $scope.$on('socket:your username', function (ev, data) {
-      my.username = data;
+    socket.on('your username', function (data) {
+      channel.username = data;
     });
 
     socket.on('event', function(event) {
 
-      console.log('Server says these users are typing:', event.usersTyping);
-      my.usersTyping = event.usersTyping;
+      channel.usersTyping = event.usersTyping;
+      console.log('Server says these users are typing:', channel.usersTyping);
 
-      if (my.usersTyping.length === 0) {
-
-      }
-      switch (my.usersTyping.length) {
+      switch (channel.usersTyping.length) {
         case 0:
-          my.othersTypingStatus = '';
+          channel.othersTypingStatus = '';
           break;
         case 1:
-          my.othersTypingStatus = my.usersTyping[0] + ' is typing';
+          channel.othersTypingStatus = channel.usersTyping[0] + ' is typing';
           break;
         case 2:
         case 3:
         case 4:
-          my.othersTypingStatus = my.usersTyping.join(' and ') + ' are typing';
+          channel.othersTypingStatus = channel.usersTyping.join(' and ') + ' are typing';
           break;
         default:
-          my.othersTypingStatus = 'Many people are typing';
+          channel.othersTypingStatus = 'Many people (and someone\'s mother) are typing';
       }
 
       // TODO at this point, message stays the same until the server sends an
@@ -125,12 +124,12 @@
 
     this.typing = function() { // check to see if user has typed something
       // FIXME maybe have '/' commands be completely ignored instead of  triggering tellServer
-      if (this.message.body.trim() === '' || this.message.body[0] === '/') {
+      if (channel.message.body.trim() === '' || channel.message.body[0] === '/') {
         // if user has erased their message or is entering a command
-        this.tellServerTypingIsHappening(false);
+        channel.tellServerTypingIsHappening(false);
         // console.log('User is not typing.');
       } else {
-        this.tellServerTypingIsHappening(true);
+        channel.tellServerTypingIsHappening(true);
         // console.log('User is typing.');
       }
     };
@@ -154,7 +153,7 @@
     };
 
     this.send = function(msg) {
-      if (this.message.body[0] === '/') {
+      if (channel.message.body[0] === '/') {
         // if (this.message.body.slice(1).split()[0])
         // if (this.message.body.trim() === '/blah') {
         //   console.log('blah blah blah');
@@ -170,38 +169,38 @@
         //   this.message.body = '';
         //   this.whenLastTyped = Date.now();
         // }
-        var input = this.message.body.slice(1).split(' ');
+        var input = channel.message.body.slice(1).split(' ');
         var cmd = input[0];
         var args = input.slice(1, input.length);
-        this.command(cmd, args);
-        this.message.body = '';
-      } else if (this.message.body.trim() != '') { // send message
+        channel.command(cmd, args);
+        channel.message.body = '';
+      } else if (channel.message.body.trim() != '') { // send message
         socket.emit('chat message', {
-          body: this.message.body,
+          body: channel.message.body,
           timestamp: Date.now()
         });
-        this.lastSentMessageBody = this.message.body;
-        this.lastSentMessageTimestamp = Date.now();
-        this.message.body = '';
-      } else if (this.message.body.trim() === '') { // clears and does not send empty text
-        this.message.body = '';
+        channel.lastSentMessageBody = channel.message.body;
+        channel.lastSentMessageTimestamp = Date.now();
+        channel.message.body = '';
+      } else if (channel.message.body.trim() === '') { // clears and does not send empty text
+        channel.message.body = '';
         // this.whenLastTyped = Date.now();
       }
       // try {
       //   this.othersTyping[this.username] = 0;
       // } catch(e) { console.log('ERROR:', e); }
       // socket.emit('not typing', Date.now());
-      this.tellServerTypingIsHappening(false);
+      channel.tellServerTypingIsHappening(false);
     };
 
   }]);
 
   // UserIndexController handles the buddle list
-  app.controller('UserIndexController', ['$http', 'mySocket', function($http, socket) {
+  app.controller('UserIndexController', ['$http', 'mySocket', function(http, socket) {
     var userList = this;
     userList.usernames = [];
 
-    $http.get('/users').then(
+    http.get('/users').then(
       function successfulCallback(response){
         userList.usernames = response.data.usernames;
         console.log('Current users fetched.');
@@ -211,7 +210,7 @@
 
     socket.on('current users', function(currentList) {
       userList.usernames = currentList;
-      console.log('Current users:', currentList);
+      console.log('Current users:', userList.usernames);
     });
 
   }]);
