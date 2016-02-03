@@ -126,38 +126,7 @@ server.route('/messages')
 var MessageModel = require('./models/message');
 var CurrentUserModel = require('./models/current_user');
 
-
-// var usersConnected = 0;
-// var logbook = {};
-
-// var usersCurrentlyTypingLogbook = {
-//   // e.g.
-//   // socket.client.id: Date,
-//   // socket.client.id: Date,
-//   // etc
-// };
-
 var eventRefresher;
-
-// function announceUsersTyping() {
-//   var usernames = [];
-//   for (var clientId in logbook) {
-//     if (usersCurrentlyTypingLogbook[clientId] > Date.now() - 7000) {
-//       usernames.push(logbook[clientId]);
-//     } else if (usersCurrentlyTypingLogbook[clientId] < Date.now - 10000) {
-//       delete usersCurrentlyTypingLogbook[clientId];
-//     }
-//   }
-//   var newEvent = {
-//     usersTyping: usernames
-//   };
-//   io.emit('event', newEvent);
-//
-//   clearTimeout(eventRefresher); // clear the event announcer timer
-//   // announce events again in 4 seconds if needed
-//   if (Object.keys(usersCurrentlyTypingLogbook).length > 0)
-//     eventRefresher = setTimeout(announceUsersTyping, 4000);
-// }
 
 function announceUsersTyping() {
   // var usernames = [];
@@ -180,28 +149,6 @@ function announceUsersTyping() {
       }
     }
   });
-
-  // TODO for users who haven't typed in a while reset their currentlyTyping to false
-  // does this even need to be done?
-}
-
-function findClientsSocket(roomId, namespace) {
-    var res = [];
-    var ns = io.of(namespace || '/'); // the default namespace is "/"
-
-    if (ns) {
-        for (var id in ns.connected) {
-            if(roomId) {
-                var index = ns.connected[id].rooms.indexOf(roomId) ;
-                if(index !== -1) {
-                    res.push(ns.connected[id]);
-                }
-            } else {
-                res.push(ns.connected[id]);
-            }
-        }
-    }
-    return res;
 }
 
 var onlineUsers = [];
@@ -287,31 +234,48 @@ io.on('connection', function(socket) {
 
   function rename(newName) {
     // first let's validate the requested name
-    console.log('ONLINE USERS:', onlineUsers, 'REQUESTED NAME:', newName);
-    console.log('newName in onlineUsers:', newName in onlineUsers);
     var currentUsernames = onlineUsers.map(function(name) { return name.toLowerCase(); });
+    // quick local search
     if (currentUsernames.indexOf(newName.toLowerCase()) > -1) {
       sysMessageToUser(newName + ' is already the name of an existing user.');
       console.log('User\'s request for rename to existing username denied.');
     } else {
-      var oldName = username;
-      username = newName;
-      console.log(oldName, 'has been renamed to', username);
-      io.sockets.connected[socket.id].emit('your username', username);
-      processMessage({
-        username: '*system*',
-        body: oldName + ' is now called ' + username + '.',
-        sent_at: Date.now(),
+      // database search
+      CurrentUserModel.findOne({ username: newName }, function(error, user) {
+        if (error) console.error(error);
+        else if (user) {
+          sysMessageToUser(newName + ' is already the name of an existing user.');
+          console.log('User\'s request for rename to existing username denied.');
+        } else { // no matches, so the name is fair game
+          var oldName = username;
+          CurrentUserModel.findOne({ username: oldName}, function(error, user) {
+            if (error) console.error(error);
+            else {
+              user.username = newName;
+              user.save(function(err) {
+                if (err) console.error(err);
+                else {
+                  username = newName;
+                  console.log(oldName, 'has been renamed to', username);
+                  io.sockets.connected[socket.id].emit('your username', username);
+                  processMessage({
+                    username: '*system*',
+                    body: oldName + ' is now called ' + username + '.',
+                    sent_at: Date.now(),
+                  });
+                  // announce new user to everyone
+                  announceCurrentUsers(username, oldName);
+                }
+              });
+            }
+          });
+        }
       });
-      // announce new user to everyone
-      announceCurrentUsers(username, oldName);
-    }
+    }//else
   }
 
   socket.on('chat message', function(msg) {
-
     processMessage(msg);
-
   });
 
   socket.on('typing', function(time) {
