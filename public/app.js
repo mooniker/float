@@ -15,7 +15,6 @@
   });
 
   app.directive('scrollBottom', ['$timeout', function ($timeout) {
-    console.log('scrollBot');
     return {
       scope: {
         scrollBottom: '='
