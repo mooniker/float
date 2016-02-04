@@ -16,14 +16,7 @@ In [demo mode](http://float.mooniker.com), users are assigned a random username 
 - MongoDB on the backend saves chat history so a new user to the chat room can retrieve all recent messages and have some context for the current chat
 - "user is currently typing" messages alert users when they or others are currently typing
 
-
-## Planned functionality
-
-- A demo/intro bot to greet new users and introduce basic features
-- basic data visualizations of current user stats and word usage
-- channels (including private channels or direct messaging)
-- modularize and refactor the crap out of `index.js`
-- TESTING!!!
+For planning and proposed functionality, see [the project's Trello board](https://trello.com/b/aNoDyWQk/float-messenger).
 
 ## Motivation and goals
 
