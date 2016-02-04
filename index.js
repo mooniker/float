@@ -129,8 +129,6 @@ var CurrentUserModel = require('./models/current_user');
 var eventRefresher;
 
 function announceUsersTyping() {
-  // var usernames = [];
-  console.log('announceUsersTyping');
   CurrentUserModel.find({
     currentlyTyping: true,
     whenLastTyped: { $gt: Date.now() - 6000 }
@@ -144,7 +142,6 @@ function announceUsersTyping() {
 
       clearTimeout(eventRefresher); // clear the event announcer timer
       if (users.length > 0) {
-        console.log('setTimeout usersTyping in 3 seconds');
         eventRefresher = setTimeout(announceUsersTyping, 3000);
       }
     }
