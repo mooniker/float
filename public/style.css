@@ -1,33 +1,49 @@
-/** { margin: 0; padding: 0; box-sizing: border-box; }
-body { font: 13px Helvetica, Arial; }
-#messenger-form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; margin-top: 5em; }
-#messenger-form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-#messenger-form button, #messenger-form input[type=submit] { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-#messages-box { list-style-type: none; margin: 1em auto 10em; padding: 0; overflow-y: scroll; }
-#messages-box li { padding: 5px 10px; }
-#messages-box li:nth-child(odd) { background: #eee; }*/
-
 #chats-box {
   overflow: scroll;
   height: 80vh;
-}
-
-#message_body {
-  width: 60%;
-}
-
-#message-submit {
-  display: hidden;
 }
 
 #currently-typing {
   min-height: 3em;
 }
 
-#messenger-form {
-  padding-left: 50px;
+label, button {
+  display: none !important
 }
 
-/* TODO http://stackoverflow.com/questions/1032914/how-to-make-a-div-to-fill-a-remaining-horizontal-space
-         ^ may fix the width of the message bar
-*/
+.cmd {
+  font-family: Inconsolata, Monaco, Consolas, 'Courier New', Courier;
+  /*background: #1b5e20;*/
+  color: lightgray;
+  font-size: 120%;
+}
+
+/* label color */
+ .input-field label {
+   color: #000;
+ }
+ /* label focus color */
+ .input-field input[type=text]:focus + label {
+   color: #000;
+   background: white;
+ }
+ /* label underline focus color */
+ .input-field input[type=text]:focus {
+   border-bottom: 1px solid #000;
+   box-shadow: 0 1px 0 0 #000;
+   background: white;
+ }
+ /* valid color */
+ .input-field input[type=text].valid {
+   border-bottom: 1px solid #000;
+   box-shadow: 0 1px 0 0 #000;
+ }
+ /* invalid color */
+ .input-field input[type=text].invalid {
+   border-bottom: 1px solid #000;
+   box-shadow: 0 1px 0 0 #000;
+ }
+ /* icon prefix focus color */
+ .input-field .prefix.active {
+   color: #000;
+ }

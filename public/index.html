@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"> -->
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> -->
@@ -18,12 +19,10 @@
     <script src="app.js"></script>
   </head>
 
-  <body>
-
-    <div class="container">
+  <body class="indigo lighten-1">
 
     <nav>
-      <div class="nav-wrapper">
+      <div class="nav-wrapper indigo darken-4">
         <a href="#" class="brand-logo center">Float Messenger</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <!-- <li><a href="sass.html">Sass</a></li>
@@ -37,10 +36,10 @@
 
       <div class="col s4">
 
-        <div class="card blue-grey darken-1" data-ng-controller="UserController as my" data-ng-hide="my.username == '???'">
+        <div class="card green darken-2" data-ng-controller="UserController as my" data-ng-hide="my.username == '???'">
           <div class="card-content white-text">
             <span class="card-title">Hi, {{my.username}}!</span>
-            <p>That's your name here. It was randomly generated so you'd have a name while you're giving this software a looksie.</p>
+            <p>That's your name here. Want a name change? Type in <span class="cmd">/callme <em>newname</em></span> to change your screenname.</p>
           </div>
           <!-- <div class="card-action">
             <a href="#">This is a link</a>
@@ -57,6 +56,14 @@
           </div>
         </div>
 
+        <div class="card-panel green darken-2">
+          <div class="card-content">
+            <span class="white-text">
+              Float Messenger is a real-time multi-user messaging system built on the MEAN stack with WebSockets and inspired by Slack.
+            </span>
+          </div>
+        </div>
+
       </div>
 
 
@@ -69,10 +76,12 @@
           </ul>
         </div><!-- end chats-box -->
 
-        <form id="messenger-form" novalidate>
+        <form id="messenger-form" novalidate class="">
           <label for="message_body" title="That's you!"><strong>{{channel.username}}</strong></label>
           <input type="text" name="message_body" id="message_body" data-ng-model="channel.message.body" autofocus autocomplete="off" placeholder="send the people a message from here" data-ng-change="channel.typing()">
-          <button data-ng-click="channel.getInput(message)" id="#message-submit">send</button>
+          <button class="btn waves-effect waves-light" type="submit" name="message-submit" data-ng-click="channel.getInput(message)" id="message-submit">
+            <i class="material-icons right">send</i>
+          </button>
         </form>
 
       </div><!-- end container#messenger -->
@@ -81,8 +90,6 @@
     <footer>
 
     </footer>
-
-    </div>
 
   </body>
 
