@@ -163,16 +163,8 @@ function announceCurrentUsers(usernameToAdd, usernameToRemove) {
 
 server.route('/users').get(function(request, response) {
   response.json({
-    usernames: getCurrentUsernames()
+    usernames: onlineUsers
   });
-});
-
-server.route('/username/:id').get(function(request, response) {
-
-  response.json({
-    username: logbook[request.params.id]
-  });
-
 });
 
 // io event listeners
