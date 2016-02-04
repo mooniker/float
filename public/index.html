@@ -34,7 +34,7 @@
 
     <div class="row">
 
-      <div class="col s4">
+      <div class="col m5 l4">
 
         <div class="card green darken-2" data-ng-controller="UserController as my" data-ng-hide="my.username == '???'">
           <div class="card-content white-text">
@@ -67,7 +67,7 @@
       </div>
 
 
-      <div class="col s8" id="messenger" data-ng-controller="ChannelController as channel">
+      <div class="col s12 m7 l8" id="messenger" data-ng-controller="ChannelController as channel">
         <div id="chats-box" data-scroll-bottom="channel.messages">
 
           <ul id="chats" class="collection">
@@ -76,7 +76,7 @@
           </ul>
         </div><!-- end chats-box -->
 
-        <form id="messenger-form" novalidate class="">
+        <form id="messenger-form" novalidate>
           <label for="message_body" title="That's you!"><strong>{{channel.username}}</strong></label>
           <input type="text" name="message_body" id="message_body" data-ng-model="channel.message.body" autofocus autocomplete="off" placeholder="send the people a message from here" data-ng-change="channel.typing()">
           <button class="btn waves-effect waves-light" type="submit" name="message-submit" data-ng-click="channel.getInput(message)" id="message-submit">
