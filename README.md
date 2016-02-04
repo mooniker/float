@@ -1,10 +1,10 @@
 # Float Messenger
 
-Float Messenger is web-based instant messaging server and client software for small teams built on the MEAN stack with [Socket.IO](http://socket.io/) for real-time full-duplex communication and Brian Ford's [angular-socket-io](https://github.com/btford/angular-socket-io) to facilitate on the client-side in Angular.
+Float Messenger is web-based instant messaging server and client software for small teams built on the MEAN stack with [Socket.IO](http://socket.io/) for real-time full-duplex communication and Brian Ford's [angular-socket-io](https://github.com/btford/angular-socket-io) to facilitate client-side in Angular.
 
 ## Why 'Float'?
 
-[According to Wikipedia](https://en.wikipedia.org/wiki/Float_(project_management)), "**float** or **slack** is the amount of time that a task in a project network can be delayed without causing a delay" to subsequent tasks or project completion. And because there's no end to functionality that could be added or redone in this project, the challenge is keeping it buoyant (or not giving it too much slack).
+[According to Wikipedia](https://en.wikipedia.org/wiki/Float_(project_management)), "**float** or **slack** is the amount of time that a task in a project network can be delayed without causing a delay" to subsequent tasks or project completion. And because there's no end to functionality that could be added or redone in this project, the challenge is keeping it buoyant (or not giving it too much _slack_).
 
 ## Demo mode
 
@@ -14,7 +14,7 @@ In [demo mode](http://float.mooniker.com), users are assigned a random username 
 
 - Multi-user real-time Internet chatroom (just what the world needs!)
 - MongoDB on the backend saves chat history so a new user to the chat room can retrieve all recent messages and have some context for the current chat
-- "user is currently typing" messages alert users when they or others are currently typing
+- "[so-and-so] is currently typing" messages alert users when they or others are currently typing
 
 For planning and proposed functionality, see [the project's Trello board](https://trello.com/b/aNoDyWQk/float-messenger).
 
@@ -23,6 +23,7 @@ For planning and proposed functionality, see [the project's Trello board](https:
 - learn how instant messaging and enterprise software suites such as Slack work
 - learn WebSockets
 - vainly start an open source project
+- ~~???~~
 - ~~profit~~
 
 
