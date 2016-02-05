@@ -22,17 +22,17 @@ var logger = require('morgan'); // HTTP request logger middleware
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
+// var passport = require('passport');
+// var LocalStrategy = require('passport-local').Strategy;
 
 // path to public
-var wwwPublic = path.join(__dirname, 'public');
+var path_to_public = path.join(__dirname, 'public');
 
 // set view engine
 server.set('view engine', 'jade');
-server.use( express.static( wwwPublic ) );
+server.use(express.static(path_to_public));
 
-server.use(favicon(path.join(wwwPublic, 'favicon.ico'))); // FIXME browser cache issue?
+server.use(favicon(path.join(path_to_public, 'favicon.ico')));
 server.use(logger('dev'));
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
@@ -42,8 +42,8 @@ server.use(expressSession({
     resave: false, // what do these do?
     saveUninitialized: false // what do these do?
 }));
-server.use(passport.initialize());
-server.use(passport.session());
+// server.use(passport.initialize());
+// server.use(passport.session());
 server.use(flash());
 
 // passport config
@@ -53,7 +53,6 @@ server.use(flash());
 // passport.deserializeUser(UserModel.deserializeUser());
 
 // mongoose connect
-// local dev = float_restarter
 var dbConnection = mongoose.connect(env.MONGO_SERVER_URI);
 
 // catch 404 and forward to error handler
@@ -104,11 +103,11 @@ var helpers = {
 
 };
 
-require('./middlewares/passport')(passport);
+// require('./middlewares/passport')(passport);
 
-server.use(helpers.setCurrentUserGlobally);
+// server.use(helpers.setCurrentUserGlobally);
 
-var usersCtrl = require('./controllers/users');
+// var usersCtrl = require('./controllers/users');
 var messagesCtrl = require('./controllers/messages');
 
 server.get('/ping', function(req, res){
@@ -125,111 +124,88 @@ server.route('/messages')
   .post(messagesCtrl.postMessage); // FIXME testing angular
 
 var MessageModel = require('./models/message');
-// var CurrentUserModel = require('./models/current_user');
-
-var usersConnected = 0;
-var logbook = {};
-
-var usersCurrentlyTypingLogbook = {
-  // e.g.
-  // socket.client.id: Date,
-  // socket.client.id: Date,
-  // etc
-};
+var CurrentUserModel = require('./models/current_user');
 
 var eventRefresher;
 
 function announceUsersTyping() {
-  var usernames = [];
-  for (var clientId in logbook) {
-    if (usersCurrentlyTypingLogbook[clientId] > Date.now() - 7000) {
-      usernames.push(logbook[clientId]);
-    } else if (usersCurrentlyTypingLogbook[clientId] < Date.now - 10000) {
-      delete usersCurrentlyTypingLogbook[clientId];
-    }
-  }
-  var newEvent = {
-    usersTyping: usernames
-  };
-  io.emit('event', newEvent);
+  CurrentUserModel.find({
+    currentlyTyping: true,
+    whenLastTyped: { $gt: Date.now() - 6000 }
+  }, 'username', function(error, users) {
+    if (error) console.error(error);
+    else { // now we have the current users who've typed in the past 7 seconds
+      var newEvent = {
+        usersTyping: users.map(function(user) { return user.username })
+      };
+      io.emit('event', newEvent);
 
-  clearTimeout(eventRefresher); // clear the event announcer timer
-  // announce events again in 4 seconds if needed
-  if (Object.keys(usersCurrentlyTypingLogbook).length > 0)
-    eventRefresher = setTimeout(announceUsersTyping, 4000);
+      clearTimeout(eventRefresher); // clear the event announcer timer
+      if (users.length > 0) {
+        eventRefresher = setTimeout(announceUsersTyping, 3000);
+      }
+    }
+  });
 }
 
-function getCurrentUsernames() {
-  var usernames = [];
-  for (var key in logbook) {
-    usernames.push(logbook[key]);
-  }
-  return usernames;
+var onlineUsers = [];
+
+function announceCurrentUsers(usernameToAdd, usernameToRemove) {
+
+  if (usernameToAdd) onlineUsers.push(usernameToAdd);
+  if (usernameToRemove) onlineUsers.splice(onlineUsers.indexOf(usernameToRemove), 1);
+
+  io.emit('current users', onlineUsers);
 }
 
 server.route('/users').get(function(request, response) {
   response.json({
-    usernames: getCurrentUsernames()
+    usernames: onlineUsers
   });
 });
-
-server.route('/username/:id').get(function(request, response) {
-
-  response.json({
-    username: logbook[request.params.id]
-  });
-
-});
-
-function totalUsersMsg(number) {
-  return number + ' user(s) online now.';
-}
-
-function yourUsername(socketId, clientId) {
-
-  // FIXME below code is a hack
-  io.sockets.connected[socketId].emit('your username', logbook[clientId]);
-  setTimeout(function() {
-    try {
-      io.sockets.connected[socketId].emit('your username', logbook[clientId]);
-    } catch( error ) {
-      setTimeout(function() {
-        try {
-          io.sockets.connected[socketId].emit('your username', logbook[clientId]);
-        } catch (err) {
-          // give up
-        }
-      }, 4000);
-    }
-  }, 2000);
-}
 
 // io event listeners
 io.on('connection', function(socket) {
 
-  var socketId = socket.id;
+  var username;
+  var thisUserModel = CurrentUserModel.findOne({ socketId: socket.id });
 
-  if (!logbook.hasOwnProperty(socket.client.id)) {
-    logbook[socket.client.id] = chance.capitalize(chance.word());
+  CurrentUserModel.findOne({socketId: socket.id}, function(error, user) {
+    if (user) { // user is weirdly already in the system
+      console.error(user, 'already in the system.');
+      // TODO in the future tie users to session/cookie
+    } else {
+      username = chance.capitalize(chance.word());
+      var newUser = new CurrentUserModel({
+        username: username,
+        socketId: socket.id,
+        socketClientId: socket.client.id,
+        userAgent: socket.handshake.headers['user-agent']
+      });
+      newUser.save(function(err) {
+        if (err) console.error(err);
+        else {
+          console.log(username, '(' + socket.id + ') has logged in.');
+          // send that user her username
+          io.sockets.connected[socket.id].emit('your username', username);
+          announceCurrentUsers(username);
+        }
+      });
+    }
+  });
+
+  function sysMessageToUser(msgBody) {
+    io.sockets.connected[socket.id].emit('chat message', {
+      username: '*system*',
+      body: msgBody,
+      timestamp: Date.now()
+    });
   }
-  if (!(socket.client.id in usersCurrentlyTypingLogbook)) {
-    usersCurrentlyTypingLogbook[socket.client.id] = 0;
-  }
-
-  // send that user her username
-  yourUsername(socket.id, socket.client.id);
-
-  usersConnected += 1;
-  var msg = 'A user named ' + logbook[socket.client.id] + ' connected. ' + totalUsersMsg(usersConnected);
-  // console.log(msg);
-  // io.emit('debug message', msg);
-
-  // announce new user to everyone
-  io.emit('current users', getCurrentUsernames());
 
   function processMessage(msg) {
+
     var newMessage = {
-      username: 'username' in msg ? msg.username : logbook[socket.client.id],
+      username: 'username' in msg ? msg.username : username,
       body: 'blah' in msg ? chance.sentence() : msg.body,
       sent_at: msg.timestamp
     };
@@ -245,107 +221,116 @@ io.on('connection', function(socket) {
     });
   }
 
+  function rename(newName) {
+    // first let's validate the requested name
+    var currentUsernames = onlineUsers.map(function(name) { return name.toLowerCase(); });
+    // quick local search
+    if (currentUsernames.indexOf(newName.toLowerCase()) > -1) {
+      sysMessageToUser(newName + ' is already the name of an existing user.');
+      console.log('User\'s request for rename to existing username denied.');
+    } else {
+      // database search
+      CurrentUserModel.findOne({ username: newName }, function(error, user) {
+        if (error) console.error(error);
+        else if (user) {
+          sysMessageToUser(newName + ' is already the name of an existing user.');
+          console.log('User\'s request for rename to existing username denied.');
+        } else { // no matches, so the name is fair game
+          var oldName = username;
+          CurrentUserModel.findOne({ username: oldName}, function(error, user) {
+            if (error) console.error(error);
+            else {
+              user.username = newName;
+              user.save(function(err) {
+                if (err) console.error(err);
+                else {
+                  username = newName;
+                  console.log(oldName, 'has been renamed to', username);
+                  io.sockets.connected[socket.id].emit('your username', username);
+                  processMessage({
+                    username: '*system*',
+                    body: oldName + ' is now called ' + username + '.',
+                    sent_at: Date.now(),
+                  });
+                  // announce new user to everyone
+                  announceCurrentUsers(username, oldName);
+                }
+              });
+            }
+          });
+        }
+      });
+    }//else
+  }
+
   socket.on('chat message', function(msg) {
-
     processMessage(msg);
-
   });
 
   socket.on('typing', function(time) {
-    usersCurrentlyTypingLogbook[socket.client.id] = time;
-    announceUsersTyping();
-
+    CurrentUserModel.findOne({ socketId: socket.id}, function(error, user) {
+      user.whenLastTyped = time;
+      user.currentlyTyping = true;
+      user.save(function(err) {
+        if (err) console.error(err);
+        else announceUsersTyping();
+      });
+    });
   });
 
   socket.on('not typing', function(time) {
-    usersCurrentlyTypingLogbook[socket.client.id] = 0;
-    delete usersCurrentlyTypingLogbook[socket.client.id];
-    announceUsersTyping();
+    CurrentUserModel.findOne({ socketId: socket.id}, function(error, user) {
+      user.currentlyTyping = false;
+      user.save(function(err) {
+        if (err) console.error(err);
+        else announceUsersTyping();
+      });
+    });
   });
 
   socket.on('request', function(req) {
-    try { // FIXME is this try block needed?
-      switch (req.cmd) {
-        case 'help':
-          // io.sockets.connected[socket.id].emit('chat message', {
-          io.sockets.connected[socket.id].emit('chat message', {
-            username: '*system*',
-            body: 'Available commands:' +
-                  '"/help" for HELP ' +
-                  '"/blah" to produce random text',
-            timestamp: Date.now()
-          });
-          break;
-        case 'blah':
+    switch (req.cmd) {
+      case 'help':
+        // io.sockets.connected[socket.id].emit('chat message', {
+        io.sockets.connected[socket.id].emit('chat message', {
+          username: '*system*',
+          body: 'Available commands:' +
+                '"/help" for HELP ' +
+                '"/blah" to produce random text',
+          timestamp: Date.now()
+        });
+        break;
+      case 'blah':
+        processMessage({
+          blah: true,
+          timestamp: req.timestamp,
+        });
+        break;
+      case 'house':
+        if (username.slice(0, 9) === 'House of ') {
           processMessage({
-            blah: true,
-            timestamp: req.timestamp,
+            username: '*system*',
+            body: 'Greetings to the ' + oldName + '.'
           });
-          break;
-        case 'house':
-          if (socket.client.id in logbook) {
-            var oldName = logbook[socket.client.id];
-            if (oldName.slice(0, 9) === 'House of ') {
-              io.sockets.connected[socket.id].emit('chat message', {
-                username: '*system*',
-                body: 'Greetings to the ' + oldName + '.'
-              });
-            } else {
-              logbook[socket.client.id] = 'House of ' + logbook[socket.client.id];
-              yourUsername(socket.id, socket.client.id);
-              processMessage({
-                username: '*system*',
-                body: oldName + ' is now called ' + logbook[socket.client.id] + '.',
-                sent_at: Date.now(),
-              });
-            }
-          }
-          break;
-        case 'nick':
-        case 'callme':
-          if (socket.client.id in logbook) {
-            // first let's validate the requested name
-            for (var key in logbook) {
-              if (logbook[key] === req.args.join('_').trim()) {
-                io.sockets.connected[socket.id].emit('chat message', {
-                  username: '*system*',
-                  body: req.args.join('_').trim() + ' is already the name of an existing user.',
-                  timestamp: Date.now()
-                });
-                console.log('User\'s request for rename to existing username denied.');
-                return; // hope this breaks out of this case ant not just for loop
-              }
-            }
-            var oldName = logbook[socket.client.id];
-            logbook[socket.client.id] = req.args.join('_'); // get rid of spaces FIXME need to regulate screenames in a better way
-            console.log(oldName, 'has been renamed to', logbook[socket.client.id]);
-            yourUsername(socket.id, socket.client.id);
-            processMessage({
-              username: '*system*',
-              body: oldName + ' is now called ' + logbook[socket.client.id] + '.',
-              sent_at: Date.now(),
-            });
-            // announce new user to everyone
-            io.emit('current users', getCurrentUsernames());
-
-          }
-          break;
+        } else {
+          rename('House of ' + username);
+        }
+        break;
+      case 'nick':
+      case 'callme':
+        rename(req.args.join('_').trim());
+        break;
       }
-    } catch(e) { console.log('Not a command.', e); }
   });
 
   socket.on('disconnect', function() {
-    usersConnected -= 1;
-
-    if (socket.client.id in usersCurrentlyTypingLogbook) {
-      try {
-      delete usersCurrentlyTypingLogbook[socket.client.id];
-      } catch(err) { console.error(err); }
-    }
-
-    var msg = logbook[socket.client.id] + ' disconnected. ' + totalUsersMsg(usersConnected);
-
-    delete logbook[socket.client.id];
+    CurrentUserModel.remove({ socketId: socket.id }, function(error) {
+      if (error) console.error(error);
+      else {
+        console.log(username, 'has logged off.');
+        announceCurrentUsers(null, username);
+      }
+    });
   });
 });
 

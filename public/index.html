@@ -6,73 +6,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"> -->
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="socket.js"></script>
     <script src="app.js"></script>
   </head>
 
-  <body>
+  <body class="indigo lighten-1">
 
-    <!-- <header class="jumbotron"> -->
-      <!-- <h1>Float Messenger</h1>
-      <div data-ng-controller="UserController as my" data-ng-hide="my.username == '???'">
-        <h2>Hi, {{my.username}}! <span>(That's your name here.)</span></h2>
-      </div> -->
-      <nav class="navbar navbar-default">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <a class="navbar-brand" href="#">Float Messenger</a>
+    <div class="container">
+
+    <nav>
+      <div class="nav-wrapper indigo darken-4">
+        <a href="#" class="brand-logo center">Float Messenger</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <!-- <li><a href="sass.html">Sass</a></li>
+          <li><a href="badges.html">Components</a></li>
+          <li><a href="collapsible.html">JavaScript</a></li> -->
+        </ul>
+      </div>
+    </nav>
+
+    <div class="row">
+
+      <div class="col m5 l4">
+
+        <div class="card green darken-2" data-ng-controller="UserController as my" data-ng-hide="my.username == '???'">
+          <div class="card-content white-text">
+            <span class="card-title">Hi, {{my.username}}!</span>
+            <p>That's your name here. Want a name change? Type in <span class="cmd">/callme <em>newname</em></span> to change your screenname.</p>
           </div>
-          <ul class="nav navbar-nav">
-            <li class="active" data-ng-controller="UserController as my" data-ng-hide="my.username == '???'"><a href="#currently-typing">Hi, {{my.username}}! <span>(That's your name here.)</span></a></li>
-          </ul>
+          <!-- <div class="card-action">
+            <a href="#">This is a link</a>
+            <a href="#">This is a link</a>
+          </div> -->
+        </div><!-- end card -->
+
+        <div class="card" data-ng-controller="UserIndexController as list" id="user-index">
+          <div class="card-content">
+            <span class="card-title">Who's Online?</span>
+            <ul class="collection">
+              <li data-username data-ng-repeat="username in list.usernames" class="collection-item"></li>
+            </ul>
+          </div>
         </div>
-      </nav>
-    <!-- </header> -->
 
-    <main class="container">
-
-      <div class="row">
-
-        <div class="col-md-8 col-sm-10" data-ng-controller="ChannelController as channel">
-
-          <div id="messenger"><!-- data-ng-controller="MessengerController as messenger" -->
-
-            <div id="chats-box" data-scroll-bottom="channel.messages">
-              <ul id="chats">
-                <li data-chat-message data-ng-repeat="message in channel.messages" class="list-group-item"></li>
-                <li id="currently-typing" class="list-group-item">{{channel.othersTypingStatus}}</li>
-              </ul>
-            </div><!-- end chats-box -->
-
-            <form id="messenger-form" novalidate>
-              <label for="message_body" title="That's you!"><strong>{{channel.username}}</strong></label>
-              <input type="text" name="message_body" id="message_body" data-ng-model="channel.message.body" autofocus autocomplete="off" placeholder="send the people a message from here" data-ng-change="channel.typing()">
-              <button data-ng-click="channel.getInput(message)" id="#message-submit">send</button>
-            </form>
-          </div><!-- end #messenger -->
-
-        </div><!-- end col -->
-
-        <aside data-ng-controller="UserIndexController as list" id="user-index" class="col-md-4 col-sm-2 well well-sm">
-          <h2>Current Users</h2>
-          <ul>
-            <li data-username data-ng-repeat="username in list.usernames"></li>
-          </ul>
-        </aside>
+        <div class="card-panel green darken-2">
+          <div class="card-content">
+            <span class="white-text">
+              Float Messenger is a real-time multi-user messaging system built on the MEAN stack with WebSockets and inspired by Slack.
+            </span>
+          </div>
+        </div>
 
       </div>
 
-    </main>
+
+      <div class="col s12 m7 l8" id="messenger" data-ng-controller="ChannelController as channel">
+        <div id="chats-box" data-scroll-bottom="channel.messages">
+
+          <ul id="chats" class="collection">
+            <li data-chat-message data-ng-repeat="message in channel.messages" class="collection-item"></li>
+            <li id="currently-typing" class="collection-item">{{channel.othersTypingStatus}}</li>
+          </ul>
+        </div><!-- end chats-box -->
+
+        <form id="messenger-form" novalidate>
+          <label for="message_body" title="That's you!"><strong>{{channel.username}}</strong></label>
+          <input type="text" name="message_body" id="message_body" data-ng-model="channel.message.body" autofocus autocomplete="off" placeholder="send the people a message from here" data-ng-change="channel.typing()">
+          <button class="btn waves-effect waves-light" type="submit" name="message-submit" data-ng-click="channel.getInput(message)" id="message-submit">
+            <i class="material-icons right">send</i>
+          </button>
+        </form>
+
+      </div><!-- end container#messenger -->
+    </div><!-- end row -->
 
     <footer>
 
     </footer>
+
+    </div><!-- end container -->
 
   </body>
 
