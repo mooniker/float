@@ -1,6 +1,6 @@
 # Float Messenger
 
-Float Messenger is web-based instant messaging server and client software for small teams built on the MEAN stack. [Socket.IO](http://socket.io/) handles the WebSockets (real-time full-duplex communication _<abbr title="for the win!">ftw</abbr>_) on both the front and back and Brian Ford's [angular-socket-io](https://github.com/btford/angular-socket-io) facilitates Socket.IO integration for Angular.
+Float Messenger is web-based instant messaging server and client software for small teams built on the MEAN stack. [Socket.IO](http://socket.io/) handles the WebSockets (real-time full-duplex communication _<abbr title="for the win!">ftw</abbr>_) on both the server and the client and [angular-socket-io](https://github.com/btford/angular-socket-io) facilitates Socket.IO integration for Angular.
 
 ## Why 'Float'?
 
