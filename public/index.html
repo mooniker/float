@@ -78,9 +78,12 @@
           </ul>
         </div><!-- end chats-box -->
 
-        <form id="messenger-form" novalidate>
+        <form id="messenger-form" novalidate class="col s12">
+          <div class="input-field col s12">
+          <i class="material-icons prefix white-text">input</i>
           <label for="message_body" title="That's you!"><strong>{{channel.username}}</strong></label>
           <input type="text" name="message_body" id="message_body" data-ng-model="channel.message.body" autofocus autocomplete="off" placeholder="send the people a message from here" data-ng-change="channel.typing()">
+          </div>
           <button class="btn waves-effect waves-light" type="submit" name="message-submit" data-ng-click="channel.getInput(message)" id="message-submit">
             <i class="material-icons right">send</i>
           </button>

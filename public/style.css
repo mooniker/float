@@ -9,8 +9,11 @@
 }
 
 label, button {
-  /*display: none !important*/
   visibility: collapse;
+}
+
+#message_body {
+  padding-left: 1em;
 }
 
 .cmd {
