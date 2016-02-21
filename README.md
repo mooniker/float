@@ -31,6 +31,14 @@ See what's going on with Float (as well as planning and proposed functionality) 
 1. Make sure you have `node` and `npm` [installed on your system](https://nodejs.org/en/download/package-manager/).
 2. Set up [MongoDB](https://docs.mongodb.org/manual/installation/) on your machine and make sure it's running.
 3. Go to a workspace on your machine and clone this repo. (E.g. `git clone https://github.com/mooniker/float.git` will create in your current working directory a `float` directory containing all the project files.)
-4. Run `npm install` to retrieve and set up the project's dependencies (Express, Mongoose, Socket.IO, etc).
+4. Enter the new `float` directory and run `npm install` to retrieve and set up the project's dependencies (Express, Mongoose, Socket.IO, etc).
 5. Create a file called `env.js` in the project's root directory. This file should be ignored by git and contains configuration settings for the server's environment. Consider `example_env.js` for a simple local setup, and if you're fine with those settings, you can just rename `example_env.js` to `env.js` and you'll be good to go.
 6. Run `node index.js` or `nodemon` to get the server up and running and hit it with your browser at [`http://localhost:4000`](http://localhost:4000) (or wherever you set it up to run).
+
+## Contributing (pull requests welcome)
+
+Please get in touch if you'd like to fix something. The general pattern is:
+
+1. Fork this repo and create your own feature branch: `git checkout -b my_new_feature`
+2. Commit your changes (`git commit -m 'Add some new feature'`) and push your feature branch to your fork (`git push origin my_new_feature`)
+3. Submit a pull request with Github
