@@ -50,13 +50,13 @@
     //   console.log('WATCHCOLLECTION:', newVal);
     // });
 
-    // Get recent message from server
-    http.get('/messages').then(
-      function successfulCallback(response){
-        channel.messages = response.data.messages;
-      }, function notSuccessfulCallback(response){
-        // sad face
-    });
+    // Get recent message from server // FIXME don't need this anymore
+    // http.get('/messages').then(
+    //   function successfulCallback(response){
+    //     channel.messages = response.data.messages;
+    //   }, function notSuccessfulCallback(response){
+    //     // sad face
+    // });
 
     // Receie chat messages from server
     socket.on('chat message', function(msg) {

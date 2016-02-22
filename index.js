@@ -204,6 +204,22 @@ io.on('connection', function(socket) {
     });
   }
 
+  sysMessageToUser('Welcome. You\'re now on board with Float.');
+
+  var yesterday = Date.now() - 86400000;
+
+  MessageModel.find({ timestamp: { $gte: yesterday } }, function(messagesFindError, messages) {
+
+    if (messagesFindError) {
+      console.error(messagesFindError);
+      sysMessageToUser('Error: failed to retrieve recent messages');
+    } else {
+      for (var i = 0; i < messages.length; i++) {
+        io.emit('chat message', messages[i]);
+      }
+    }
+  });
+
   function processMessage(msg) {
 
     var newMessage = {
