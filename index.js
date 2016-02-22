@@ -204,7 +204,10 @@ io.on('connection', function(socket) {
     });
   }
 
+  // io.emit
   sysMessageToUser('Welcome. You\'re now on board with Float.');
+  announceCurrentUsers();
+  announceUsersTyping();
 
   var yesterday = Date.now() - 86400000;
 
@@ -215,7 +218,7 @@ io.on('connection', function(socket) {
       sysMessageToUser('Error: failed to retrieve recent messages');
     } else {
       for (var i = 0; i < messages.length; i++) {
-        io.emit('chat message', messages[i]);
+        io.sockets.connected[socket.id].emit('chat message', messages[i]);
       }
     }
   });

@@ -189,13 +189,13 @@
     var userList = this;
     userList.usernames = [];
 
-    http.get('/users').then(
-      function successfulCallback(response){
-        userList.usernames = response.data.usernames;
-        console.log('Current users fetched.');
-      }, function notSuccessfulCallback(response){
-        console.error(response);
-    });
+    // http.get('/users').then(
+    //   function successfulCallback(response){
+    //     userList.usernames = response.data.usernames;
+    //     console.log('Current users fetched.');
+    //   }, function notSuccessfulCallback(response){
+    //     console.error(response);
+    // });
 
     socket.on('current users', function(currentList) {
       userList.usernames = currentList;
