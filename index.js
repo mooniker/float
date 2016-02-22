@@ -12,6 +12,7 @@ var express = require('express');
 var server = express();
 var http = require('http').Server(server);
 var io = require('socket.io')(http);
+// module.exports = http;
 // var io = require('./io');
 var path = require('path');
 
@@ -112,7 +113,7 @@ var helpers = {
 // server.use(helpers.setCurrentUserGlobally);
 
 // var usersCtrl = require('./controllers/users');
-var messagesCtrl = require('./controllers/messages');
+// var messagesCtrl = require('./controllers/messages');
 
 server.get('/ping', function(req, res) {
   console.log('REQ.SESSION:', req.session, 'REQ.SESSIONID:', req.sessionID);
