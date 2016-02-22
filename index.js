@@ -15,7 +15,7 @@ var path = require('path');
 var Chance = require('chance');
 var chance = Chance();
 
-var expressSession = require('express-session');
+var session = require('express-session');
 var favicon = require('serve-favicon');
 var flash = require('connect-flash');
 var logger = require('morgan'); // HTTP request logger middleware
@@ -37,10 +37,11 @@ server.use(logger('dev'));
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(cookieParser());
-server.use(expressSession({
-    secret: 'bimilbimilbimil',
-    resave: false, // what do these do?
-    saveUninitialized: false // what do these do?
+server.use(session({
+  // genid: function(req) { return genuuid(); }, // use UUIDs for sessionIDs
+  secret: 'bimilbimilbimil', // used to sign session ID cookie
+  resave: false, // forces session to be saved even if unmodified
+  saveUninitialized: false // do not force uninitialized session to be saved to store
 }));
 // server.use(passport.initialize());
 // server.use(passport.session());
@@ -110,8 +111,9 @@ var helpers = {
 // var usersCtrl = require('./controllers/users');
 var messagesCtrl = require('./controllers/messages');
 
-server.get('/ping', function(req, res){
-    res.status(200).send('Pong!');
+server.get('/ping', function(req, res) {
+  console.log('REQ.SESSION:', req.session, 'REQ.SESSIONID:', req.sessionID);
+  res.status(200).send('Pong!');
 });
 
 server.route('/vanilla')
