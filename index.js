@@ -1,3 +1,5 @@
+'use strict';
+
 var env; // configuration variables
 try { // check if local env.js exists for dev server
   env = require('./env');
@@ -204,7 +206,6 @@ io.on('connection', function(socket) {
     });
   }
 
-  // io.emit
   sysMessageToUser('Welcome. You\'re now on board with Float.');
   announceCurrentUsers();
   announceUsersTyping();
