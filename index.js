@@ -12,6 +12,7 @@ var express = require('express');
 var server = express();
 var http = require('http').Server(server);
 var io = require('socket.io')(http);
+// var io = require('./io');
 var path = require('path');
 
 var Chance = require('chance');
@@ -118,14 +119,10 @@ server.get('/ping', function(req, res) {
   res.status(200).send('Pong!');
 });
 
-server.route('/vanilla')
-  .get(function(request, response) {
-    response.render('public');
-  });
-
-server.route('/messages')
-  .get(messagesCtrl.getMessages) // FIXME require auth
-  .post(messagesCtrl.postMessage); // FIXME testing angular
+// server.route('/vanilla')
+//   .get(function(request, response) {
+//     response.render('public');
+//   });
 
 var MessageModel = require('./models/message');
 var CurrentUserModel = require('./models/current_user');
@@ -161,12 +158,6 @@ function announceCurrentUsers(usernameToAdd, usernameToRemove) {
 
   io.emit('current users', onlineUsers);
 }
-
-server.route('/users').get(function(request, response) {
-  response.json({
-    usernames: onlineUsers
-  });
-});
 
 // io event listeners
 io.on('connection', function(socket) {
