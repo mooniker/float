@@ -1,14 +1,26 @@
-# Communication's gotta happen between server and clients and it's got to be standardized
+# The server and client have got to talk to each other and their interlocution has got to be standardized
 
 ## Messages from client to server
 
-## Messages
-
 ### 'chat message'
+
+Here's how the client sends the server a message:
+
+```js
+socket.emit('chat message', {
+  body: channel.message.body,
+  timestamp: Date.now()
+});
+```
 
 ### 'typing' and 'not typing'
 
-As currently emitted,
+Here's how the client tells the server she is typing:
+
+```js
+// typingIsHappening is a boolean
+socket.emit(typingIsHappening ? 'typing' : 'not typing', Date.now());
+```
 
 ### requests
 
@@ -26,7 +38,7 @@ socket.emit('request', {
 });
 ```
 
-Here's some IRC commands we may (or may not want to repurpose):
+Here's some IRC commands we may use (or repurpose):
 
 - `/join`
 - `/me`
@@ -40,12 +52,13 @@ Server ignores args for `/help`, `/blah`, and `/house`.
 
 ### chat messages
 
-Generally, the message is saved to database and then sent to clients only when the save was successful.
+Generally, the message is saved to database and then sent to other clients only when the save was successful.
 
 ```js
 var newMessage = {
-  key1: value1,
-  key2: value2
+  username: 'username' in msg ? msg.username : username,
+  body: msg.body,
+  sent_at: msg.timestamp
 };
 new MessageModel(newMessage).save(function(msgSaveError) {
   if (msgSaveError) console.error(msgSaveError);
@@ -56,24 +69,19 @@ new MessageModel(newMessage).save(function(msgSaveError) {
 });
 ```
 
-### system messages?
+### system message to individual user
 
-**not implemented yet**
+Here's how they are currently implemented:
 
 ```js
-// probably going to need to set something like this up
-var newSysMsg = {
-  key1: value1,
-  key2: value2,
+io.sockets.socket[socket.id].emit('chat message', {
+  username: '*system*',
+  body: msgBody,
   timestamp: Date.now()
-}
-new SystemMessage(newSysMsg).save(function(msgSaveError) {
-  if (msgSaveError) console.error(msgSaveError);
-  else {
-    io.emit('sys message', newSysMsg)
-  }
-})
+}); // not saved to database
 ```
+
+TODO: system message architecture need to completely overhauled.
 
 ### Events
 
@@ -87,9 +95,10 @@ var newEvent = {
 }
 io.emit('event', newEvent);
 clearTimeout(eventRefresher); // clear the event announcer timer
-// announce events again in 4 seconds if needed
-if (Object.keys(usersCurrentlyTypingLogbook).length > 0)
-  eventRefresher = setTimeout(announceUsersTyping, 4000);
 ```
 
 #### newUser
+
+```js
+io.emit('current users', currentUsers);
+```

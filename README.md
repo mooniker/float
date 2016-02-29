@@ -35,6 +35,10 @@ See what's going on with Float (as well as planning and proposed functionality) 
 5. Create a file called `env.js` in the project's root directory. This file should be ignored by git and contains configuration settings for the server's environment. Consider `example_env.js` for a simple local setup, and if you're fine with those settings, you can just rename `example_env.js` to `env.js` and you'll be good to go.
 6. Run `node index.js` or `nodemon` to get the server up and running and hit it with your browser at [`http://localhost:4000`](http://localhost:4000) (or wherever you set it up to run).
 
+## Additional documentation
+
+See [the planning folder](https://github.com/mooniker/float/tree/master/planning) for (ongoing) documentation of [the planned data models](https://github.com/mooniker/float/blob/master/planning/models.md#readme) and [client-server communications](https://github.com/mooniker/float/blob/master/planning/messages.md#readme).
+
 ## Contributing (pull requests welcome)
 
 Please get in touch if you'd like to fix something. The general pattern is:
