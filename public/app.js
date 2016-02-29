@@ -31,6 +31,27 @@
     };
   }]);
 
+  app.controller('ConnectionController', ['$scope', 'mySocket', function($scope, socket) {
+
+    var connection = this;
+    this.connected = false;
+    var notConnectedMessage = 'not connected!';
+    $scope.placeholderInput = notConnectedMessage;
+
+    socket.on('connect', function(something) {
+      if (something) console.log('something:', something);
+      console.log('connect');
+      connection.connected = true;
+      $scope.placeholderInput = 'send the people a message';
+    });
+    socket.on('disconnect', function(something) {
+      if (something) console.log('something:', something);
+      console.log('disconnect');
+      connection.connected = false;
+      $scope.placeholderInput = notConnectedMessage;
+    });
+  }]);
+
   // UserController handles stuff user stuff pertaining to this user
   app.controller('UserController', ['$scope', function(scope) {
     var my = this;

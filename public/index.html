@@ -34,18 +34,18 @@
       </div>
     </nav>
 
-    <div class="row">
+    <div class="row" data-ng-controller="ConnectionController as connection">
 
       <div class="col m5 l4">
 
-        <div class="card red darken-4">
+        <div class="card red darken-4" data-ng-hide="connection.connected">
           <div class="card-content white-text">
-            <span class="card-title">Connection Status</span>
-            <p>Let's figure out address the state of the connection here.</p>
+            <span class="card-title">No connection</span>
+            <p>Hold up, we're trying to establish a connection to the messaging network.</p>
           </div>
         </div>
 
-        <div class="card green darken-2" data-ng-controller="UserController as my" data-ng-hide="my.username == '???'">
+        <div class="card green darken-2" data-ng-controller="UserController as my" data-ng-hide="my.username == '???' || !connection.connected">
           <div class="card-content white-text">
             <span class="card-title">Hi, {{my.username}}!</span>
             <p>That's your name here. Want a name change? Type in <span class="cmd">/callme <em>newname</em></span> to change your screenname.</p>
@@ -56,7 +56,7 @@
           </div> -->
         </div><!-- end card -->
 
-        <div class="card" data-ng-controller="UserIndexController as list" id="user-index">
+        <div class="card" data-ng-controller="UserIndexController as list" id="user-index" data-ng-show="connection.connected">
           <div class="card-content">
             <span class="card-title">Who's Online?</span>
             <ul class="collection">
@@ -89,9 +89,9 @@
           <div class="input-field col s12">
           <i class="material-icons prefix white-text">input</i>
           <label for="message_body" title="That's you!"><strong>{{channel.username}}</strong></label>
-          <input type="text" name="message_body" id="message_body" data-ng-model="channel.message.body" autofocus autocomplete="off" placeholder="send the people a message from here" data-ng-change="channel.typing()">
+          <input type="text" name="message_body" id="message_body" data-ng-model="channel.message.body" autofocus autocomplete="off" placeholder="{{placeholderInput}}" data-ng-change="channel.typing()" data-ng-disabled="!connection.connected">
           </div>
-          <button class="btn waves-effect waves-light" type="submit" name="message-submit" data-ng-click="channel.getInput(message)" id="message-submit">
+          <button class="btn waves-effect waves-light" type="submit" name="message-submit" data-ng-click="channel.getInput(message)" id="message-submit" data-ng-disabled="!connection.connected">
             <i class="material-icons right">send</i>
           </button>
         </form>
