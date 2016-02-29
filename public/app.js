@@ -36,20 +36,52 @@
     var connection = this;
     this.connected = false;
     var notConnectedMessage = 'not connected!';
+    this.statusString = 'Getting our bearings. Let us connect to the messaging network.';
+    this.reconnectAttempts = null;
     $scope.placeholderInput = notConnectedMessage;
 
-    socket.on('connect', function(something) {
-      if (something) console.log('something:', something);
-      console.log('connect');
+    socket.on('connect', function() {
+      console.log('socket event: connect (Fired upon a successful connection)');
       connection.connected = true;
       $scope.placeholderInput = 'send the people a message';
+      this.reconnectAttempts = 0;
     });
-    socket.on('disconnect', function(something) {
-      if (something) console.log('something:', something);
-      console.log('disconnect');
+
+    socket.on('disconnect', function() {
+      console.log('socket event: disconnect');
       connection.connected = false;
       $scope.placeholderInput = notConnectedMessage;
     });
+
+    socket.on('connect_error', function(err) {
+      console.log('socket event: connect_error (Fired upon a connection error) error:', err);
+    });
+
+    socket.on('connect_timeout', function() {
+      console.log('socket event: connect_timeout (Fired upon a connection timeout)');
+    });
+
+    socket.on('reconnect', function(num) {
+      console.log('socket event: reconnect (Fired upon a successful reconnection). reconnection attempt number:', num);
+    });
+
+    socket.on('reconnect_attempt', function() {
+      console.log('socket event: reconnect_attempt (Fired upon an attempt to reconnect)');
+    });
+
+    socket.on('reconnecting', function(reconnectionAttemptNumber) {
+      console.log('socket event: reconnecting (Fired upon an attempt to reconnect) reconnection attempt number:', reconnectionAttemptNumber);
+      this.reconnectAttempts = reconnectionAttemptNumber;
+    });
+
+    socket.on('reconnect_error', function(err) {
+      console.log('socket event: reconnect_error (Fired upon a reconnection attempt error) error:', err);
+    });
+
+    socket.on('reconnect_failed', function() {
+      console.log('socket event: reconnect_failed (Fired when couldn’t reconnect within reconnectionAttempts)');
+    });
+
   }]);
 
   // UserController handles stuff user stuff pertaining to this user
