@@ -37,7 +37,6 @@ function announceCurrentUsers(usernameToAdd, usernameToRemove) {
   CurrentUserModel.find({}, function(error, users) {
     if (error) console.error(error);
     else {
-      console.log('CURRENT USERES:', users);
       var currentUsers = [];
       for (var u = 0; u < users.length; u++) {
         currentUsers.push(users[u].username);
