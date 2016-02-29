@@ -118,9 +118,6 @@ var helpers = {
 
 // server.use(helpers.setCurrentUserGlobally);
 
-// var usersCtrl = require('./controllers/users');
-// var messagesCtrl = require('./controllers/messages');
-
 server.get('/ping', function(req, res) {
   console.log('REQ.SESSION:', req.session, 'REQ.SESSIONID:', req.sessionID);
   res.status(200).send('Pong!');
