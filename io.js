@@ -37,17 +37,17 @@ function announceUsersTyping() {
 //   });
 // }
 
-function checkUniqueUsername(username, isUniqueCallback, isNotUniqueCallback) {
-  CurrentUserModel.find({}, function(error, users) {
-    if (error) callback(error);
-    else {
-      if (users.map(function(user) {
-        return user.username.toLowerCase();
-      }).indexOf(username.toLowerCase()) === -1 ) isUniqueCallback(username);
-      else isNotUniqueCallback(username);
-    }
-  });
-}
+// function checkUniqueUsername(username, isUniqueCallback, isNotUniqueCallback) {
+//   CurrentUserModel.find({}, function(error, users) {
+//     if (error) callback(error);
+//     else {
+//       if (users.map(function(user) {
+//         return user.username.toLowerCase();
+//       }).indexOf(username.toLowerCase()) === -1 ) isUniqueCallback(username);
+//       else isNotUniqueCallback(username);
+//     }
+//   });
+// }
 
 function announceCurrentUsers(usernameToAdd, usernameToRemove) {
 
@@ -171,46 +171,6 @@ io.on('connection', function(socket) {
         });
       }
     });
-
-    // // first let's validate the requested name
-    // var currentUsernames = onlineUsers.map(function(name) { return name.toLowerCase(); });
-    // // quick local search
-    // if (currentUsernames.indexOf(newName.toLowerCase()) > -1) {
-    //   sysMessageToUser(newName + ' is already the name of an existing user.');
-    //   console.log('User\'s request for rename to existing username denied.');
-    // } else {
-    //   // database search
-    //   CurrentUserModel.findOne({ username: newName }, function(error, user) {
-    //     if (error) console.error(error);
-    //     else if (user) {
-    //       sysMessageToUser(newName + ' is already the name of an existing user.');
-    //       console.log('User\'s request for rename to existing username denied.');
-    //     } else { // no matches, so the name is fair game
-    //       var oldName = username;
-    //       CurrentUserModel.findOne({ username: oldName}, function(error, user) {
-    //         if (error) console.error(error);
-    //         else {
-    //           user.username = newName;
-    //           user.save(function(err) {
-    //             if (err) console.error(err);
-    //             else {
-    //               username = newName;
-    //               console.log(oldName, 'has been renamed to', username);
-    //               io.sockets.connected[socket.id].emit('your username', username);
-    //               processMessage({
-    //                 username: '*system*',
-    //                 body: oldName + ' is now called ' + username + '.',
-    //                 sent_at: Date.now(),
-    //               });
-    //               // announce new user to everyone
-    //               announceCurrentUsers(username, oldName);
-    //             }
-    //           });
-    //         }
-    //       });
-    //     }
-    //   });
-    // }//else
   }
 
   socket.on('chat message', function(msg) {
