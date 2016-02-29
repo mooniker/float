@@ -1,14 +1,14 @@
 
-var http = require('./index');
+var http = require('./index'); // get the HTTP server provisioned in index.js
 var io = require('socket.io')(http);
 
 var Chance = require('chance');
-var chance = Chance();
+var chance = Chance(); // used for random name generation
 
 var MessageModel = require('./models/message');
 var CurrentUserModel = require('./models/current_user');
 
-var eventRefresher;
+var eventRefresher; // timer used to time checks and announcements of users currently typing
 
 function announceUsersTyping() {
   CurrentUserModel.find({
@@ -32,7 +32,7 @@ function announceUsersTyping() {
 
 function announceCurrentUsers(usernameToAdd, usernameToRemove) {
 
-  // FIXME usernameToAdd, usernameToRemove may not be needed
+  // FIXME usernameToAdd, usernameToRemove may not be needed anymore
 
   CurrentUserModel.find({}, function(error, users) {
     if (error) console.error(error);
