@@ -150,14 +150,25 @@ function announceUsersTyping() {
   });
 }
 
-var onlineUsers = [];
+// var onlineUsers = [];
 
 function announceCurrentUsers(usernameToAdd, usernameToRemove) {
 
-  if (usernameToAdd) onlineUsers.push(usernameToAdd);
-  if (usernameToRemove) onlineUsers.splice(onlineUsers.indexOf(usernameToRemove), 1);
+  // if (usernameToAdd) onlineUsers.push(usernameToAdd);
+  // if (usernameToRemove) onlineUsers.splice(onlineUsers.indexOf(usernameToRemove), 1);
+  // io.emit('current users', onlineUsers);
 
-  io.emit('current users', onlineUsers);
+  CurrentUserModel.find({}, function(error, users) {
+    if (error) console.error(error);
+    else {
+      console.log('CURRENT USERES:', users);
+      var currentUsers = [];
+      for (var u = 0; u < users.length; u++) {
+        currentUsers.push(users[u].username);
+      }
+      io.emit('current users', currentUsers);
+    }
+  });
 }
 
 // io event listeners
