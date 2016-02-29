@@ -30,13 +30,9 @@ function announceUsersTyping() {
   });
 }
 
-// var onlineUsers = [];
-
 function announceCurrentUsers(usernameToAdd, usernameToRemove) {
 
-  // if (usernameToAdd) onlineUsers.push(usernameToAdd);
-  // if (usernameToRemove) onlineUsers.splice(onlineUsers.indexOf(usernameToRemove), 1);
-  // io.emit('current users', onlineUsers);
+  // FIXME usernameToAdd, usernameToRemove may not be needed
 
   CurrentUserModel.find({}, function(error, users) {
     if (error) console.error(error);
