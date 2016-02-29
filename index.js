@@ -31,13 +31,13 @@ var mongoose = require('mongoose');
 // var LocalStrategy = require('passport-local').Strategy;
 
 // path to public
-var path_to_public = path.join(__dirname, 'public');
+var pathToPublic = path.join(__dirname, 'public');
 
 // set view engine
 server.set('view engine', 'jade');
-server.use(express.static(path_to_public));
+server.use(express.static(pathToPublic));
 
-server.use(favicon(path.join(path_to_public, 'favicon.ico')));
+server.use(favicon(path.join(pathToPublic, 'favicon.ico')));
 server.use(logger('dev'));
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
