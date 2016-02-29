@@ -211,6 +211,18 @@ io.on('connection', function(socket) {
           timestamp: Date.now()
         });
         break;
+      case 'whoami':
+        CurrentUserModel.findOne({ username: username }, function(err, user) {
+          if (err) console.error(err);
+          else {
+            io.sockets.connected[socket.id].emit('chat message', {
+              username: '*system*',
+              body: 'Whois ' + user.username + ': ' + user.userAgent + ' since ' + user.loggedOnSince + (user.whenLastTyped ? user.whenLastTyped : ''),
+              timestamp: Date.now()
+            });
+          }
+        });
+        break;
       case 'blah':
         processMessage({
           blah: true,

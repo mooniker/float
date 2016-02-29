@@ -45,6 +45,13 @@
       connection.connected = true;
       $scope.placeholderInput = 'send the people a message';
       this.reconnectAttempts = 0;
+      if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+       console.log('User agent is mobile');
+       $scope.mobile = true;
+     } else {
+       console.log('User agent isnt mobile');
+       $scope.mobile = false;
+     }
     });
 
     socket.on('disconnect', function() {
@@ -185,6 +192,7 @@
         case 'help':
           // console.log('User asked for help.');
           // break;
+        case 'whoami':
         case 'blah':
           // console.log('Blah blah blah to server.');
           // break;

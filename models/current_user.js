@@ -30,7 +30,9 @@ var CurrentUserSchema = new Schema({
       default: null // should this be 0?
     },
 
-    userAgent: String
+    userAgent: String,
+
+    loggedOnSince: { type: Date, default: Date.now }
 
 });
 
