@@ -7,14 +7,13 @@
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"> -->
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
-    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="//cdn.socket.io/socket.io-1.4.5.js"></script>
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
     <script src="socket.js"></script>
     <script src="app.js"></script>
   </head>
@@ -41,7 +40,7 @@
         <div class="card red darken-4" data-ng-hide="connection.connected">
           <div class="card-content white-text">
             <span class="card-title">No connection</span>
-            <p>Hold up, we're trying to establish a connection to the messaging network.</p>
+            <p>Hold up, we're trying to {{ connection.reconnectAttempts != 0 ? 're' : '' }}establish a connection to the messaging network.</p>
           </div>
         </div>
 
