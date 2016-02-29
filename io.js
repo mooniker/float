@@ -36,13 +36,9 @@ function announceCurrentUsers(usernameToAdd, usernameToRemove) {
 
   CurrentUserModel.find({}, function(error, users) {
     if (error) console.error(error);
-    else {
-      var currentUsers = [];
-      for (var u = 0; u < users.length; u++) {
-        currentUsers.push(users[u].username);
-      }
-      io.emit('current users', currentUsers);
-    }
+    else io.emit('current users', users.map(function(user) {
+      return user.username;
+    }));
   });
 }
 
