@@ -1,7 +1,7 @@
 // # Here's an example of `env.js`
 //
 // `env.js` is where you can put configuration settings
-// for your server's environment.
+// for your development server's environment.
 //
 // If you're fine with a simple local setup, just rename
 // this file `env.js` (by removing `example_`).
