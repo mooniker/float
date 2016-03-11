@@ -188,19 +188,16 @@
 
     this.command = function(command, args) {
       var cmd = command.toLowerCase();
-      switch (cmd) {
+      switch (cmd) { // whitelist some commands to be sent to server
+        // TODO maybe filter these or preprocess them to help server out
         case 'help':
-          // console.log('User asked for help.');
-          // break;
         case 'whoami':
         case 'blah':
-          // console.log('Blah blah blah to server.');
-          // break;
         case 'house':
-          // console.log('Rename as House of Me');
         case 'callme':
         case 'nick':
-          console.log('sent request to server:', cmd, args)
+        case 'join':
+          console.log('Sent request to server:', cmd, args);
           socket.emit('request', {
             cmd: cmd,
             args: args,
@@ -209,6 +206,7 @@
           break;
         default:
           // TODO some error message to user: invalid command
+          console.log('Invalid command:', cmd);
       }
     };
 
