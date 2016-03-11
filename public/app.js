@@ -118,11 +118,16 @@
     //     // sad face
     // });
 
-    // Receie chat messages from server
+    socket.on('connect', function() {
+      channel.messages = []; // reset messages
+      // TODO instead we should just add in messages that aren't already in there
+    });
+
+    // Receive chat messages from server
     socket.on('chat message', function(msg) {
       channel.messages.push(msg);
       console.log('Received:', msg);
-      // TODO want message box to be auto scrolled to bottom.
+      // TODO don't add in messages that are already in there
     });
 
     channel.message = {}; // ng-model for message user inputs
