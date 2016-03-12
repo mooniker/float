@@ -243,6 +243,17 @@ io.on('connection', function(socket) {
       case 'callme':
         rename(req.args.join('_').trim());
         break;
+      case 'join':
+        var room = req.args[0];
+        console.log('Joining room', room);
+        socket.join(room);
+        var newJoin = {
+          username: '*float*',
+          body: username + ' has joined #' + room,
+          timestamp: Date.now()
+        };
+        io.to(room).emit('chat message', newJoin);
+        break;
       }
   });
 

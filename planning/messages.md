@@ -39,9 +39,8 @@ socket.emit('request', {
 });
 ```
 
-Here's some IRC commands we may use (or repurpose):
+Here's some IRC commands we may (or may not) use (or repurpose):
 
-- `/join`
 - `/me`
 - `/msg`
 - `/notice`
