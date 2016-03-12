@@ -29,6 +29,7 @@ socket.emit(typingIsHappening ? 'typing' : 'not typing', Date.now());
 - `/help`
 - `/nick` or `/callme`
 - `/join` <channel>
+- '/list'
 
 Client does this:
 ```js

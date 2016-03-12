@@ -11,17 +11,17 @@ var ChannelSchema = new Schema({
 
   name: String,
 
-  members: [{
-    type: Schema.Types.ObjectId,
-    ref: 'User'
-  }],
+  // members: [{
+  //   type: Schema.Types.ObjectId,
+  //   ref: 'User'
+  // }],
 
   messages: [{
     type: Schema.Types.ObjectId,
     ref: 'Message'
   }],
 
-  public: { type: Boolean, default: false },
+  public: { type: Boolean, default: true },
 
   created_at: { type: Date, default: Date.now },
 

@@ -52,6 +52,7 @@
        console.log('User agent isnt mobile');
        $scope.mobile = false;
      }
+     socket.emit('request', 'list'); // get the list of public channels
     });
 
     socket.on('disconnect', function() {
@@ -201,6 +202,7 @@
         case 'house':
         case 'callme':
         case 'nick':
+        case 'list':
         case 'join':
           console.log('Sent request to server:', cmd, args);
           socket.emit('request', {

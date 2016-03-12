@@ -65,6 +65,19 @@ CurrentUserModel.remove({}, function(err) {
   if (err) console.error(err);
   else console.log('Current users from previous session have been removed from database.');
 });
+var ChannelModel = require('./models/channel');
+CurrentUserModel.remove({}, function(error) {
+  if (error) console.error(err);
+  else {
+    console.log('Channels cleared.');
+    ChannelModel({
+      name: 'general'
+    }).save(function(err) {
+      if (err) console.error(err);
+      else console.log('#general channel created.');
+    });
+  }
+});
 
 // catch 404 and forward to error handler
 // server.use(function(req, res, next) {

@@ -7,6 +7,7 @@ var chance = Chance(); // used for random name generation
 
 var MessageModel = require('./models/message');
 var CurrentUserModel = require('./models/current_user');
+var ChannelModel = require('./models/channel');
 
 var eventRefresher; // timer used to time checks and announcements of users currently typing
 
@@ -254,6 +255,19 @@ io.on('connection', function(socket) {
         };
         io.to(room).emit('chat message', newJoin);
         break;
+      case 'list':
+        ChannelModel.find({ public: true }, function(error, channels) {
+          if (error) console.error(error);
+          else if (channels) io.sockets.connected[socket.id].emit('channel list', {
+            channels: channels.map(function(channel) {
+              return channel.name;
+            }),
+            timestamp: Date.now()
+          });
+          console.log('Channels requested by', username, channels.map(function(channel) {
+            return channel.name;
+          }));
+        });
       }
   });
 
