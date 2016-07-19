@@ -1,4 +1,4 @@
-# Float Messenger
+# Float Messenger [![Dependency Status](https://david-dm.org/mooniker/float.svg)](https://david-dm.org/mooniker/float)
 
 Float Messenger is web-based instant messaging server and client software for small teams built on the MEAN stack. [Socket.IO](http://socket.io/) handles the WebSockets (real-time full-duplex communication _<abbr title="for the win!">ftw</abbr>_) on both the server and the client and [angular-socket-io](https://github.com/btford/angular-socket-io) facilitates Socket.IO integration for Angular.
 
