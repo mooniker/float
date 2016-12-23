@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>float</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet/less" type="text/css" href="style.less">
+    <!--<script type="text/javascript" src="bower_components/less/dist/less.js" data-log-level="1"></script>-->
+    <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js" integrity="sha256-ATJWBF9ZhO9FS8vr9wEhYO+W9vLtd3jRZVmEdC5EL0s=" crossorigin="anonymous"></script>-->
+
+    <!-- Font Awesome (CDN for production) -->
+    <!--<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">-->
+    <!--<link href="bower_components/components-font-awesome/css/font-awesome.css" rel="stylesheet">-->
+</head>
+
+<body ng-app="floatApp">
+    <!--[if lte IE 8]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <!-- Add your site or application content here -->
+    <div class="header">
+        <div class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+
+                    <!--<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#js-navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>-->
+
+                    <a class="navbar-brand" href="#!/">float messenger</a>
+                </div>
+
+                <!--<div class="collapse navbar-collapse" id="js-navbar-collapse">
+
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="#/">Home</a></li>
+						<li><a ng-href="#/cards">Cards</a></li>
+						<li><a ng-href="#/about">About</a></li>
+						<li><a ng-href="#/">Contact</a></li>
+					</ul>
+				</div>-->
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div ng-view=""></div>
+    </div>
+
+    <div class="footer">
+        <div class="container">
+
+        </div>
+    </div>
+
+
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
+    <!--<script>
+       !function(A,n,g,u,l,a,r){A.GoogleAnalyticsObject=l,A[l]=A[l]||function(){
+       (A[l].q=A[l].q||[]).push(arguments)},A[l].l=+new Date,a=n.createElement(g),
+       r=n.getElementsByTagName(g)[0],a.src=u,r.parentNode.insertBefore(a,r)
+       }(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+       ga('create', 'UA-XXXXX-X');
+       ga('send', 'pageview');
+    </script>-->
+
+    <!-- external dependencies -->
+    <script src="node_modules/angular/angular.js"></script>
+    <!--<script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>-->
+    <script src="node_modules/angular-animate/angular-animate.js"></script>
+    <!--<script src="node_modules/angular-cookies/angular-cookies.js"></script>-->
+    <!--<script src="node_modules/angular-resource/angular-resource.js"></script>-->
+    <script src="node_modules/angular-route/angular-route.js"></script>
+    <!--<script src="node_modules/angular-sanitize/angular-sanitize.js"></script>-->
+    <!--<script src="node_modules/angular-touch/angular-touch.js"></script>-->
+    <!--<script src="node_modules/angular-bootstrap/ui-bootstrap-tpls.js"></script>-->
+
+    <!-- Moment.js -->
+    <script src="node_modules/moment/moment.js"></script>
+    <script src="node_modules/angular-moment/angular-moment.js"></script>
+
+    <!-- the app itself -->
+    <script src="app.js"></script>
+
+    <script src="node_modules/angular-primus/angular-primus.js"></script>
+
+    <!-- components -->
+    <script src="home.view.js"></script>
+    <!-- Client-side Primus library (use on dev only) -->
+    <script src="/primus/primus.js"></script>
+</body>
+
+</html>
