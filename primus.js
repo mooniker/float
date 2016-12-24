@@ -71,6 +71,15 @@ module.exports = function (server) {
             postmark: new Date()
           }
         })
+      } else if (confirmation.score === 0) {
+        spark.write({
+          message: {
+            userId: serverId,
+            body: `Huh? Are you ${theirNameUnconfirmed} - yes or no?`,
+            subtext: JSON.stringify(confirmation),
+            postmark: new Date()
+          }
+        })
       } else {
         expectingResponse = receiveName
         theirNameUnconfirmed = null
