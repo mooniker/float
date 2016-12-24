@@ -25,3 +25,5 @@ app.use(express.static('public'))
 
 // Listen
 server.listen(app.get('port'), console.log(`Floating on port ${app.get('port')}.`))
+
+module.exports = server // for testing
