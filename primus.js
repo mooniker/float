@@ -9,6 +9,13 @@ const chance = new Chance()
 
 // sentiment analysis tool
 const sentiment = require('sentiment')
+const extraWords = {
+  'yep': 1,
+  'yup': 1,
+  'yesh': 1,
+  'nope': -1,
+  'nah': -1
+}
 
 module.exports = function (server) {
   const primus = new Primus(server)
@@ -53,7 +60,7 @@ module.exports = function (server) {
     }
 
     function confirmName (message) {
-      let confirmation = sentiment(message.body)
+      let confirmation = sentiment(message.body, extraWords)
       if (confirmation.score >= 1) {
         expectingResponse = null
         theirName = theirNameUnconfirmed
@@ -99,8 +106,6 @@ module.exports = function (server) {
       let data = {
         message: {
           userId: serverId,
-          // body: chance.sentence(),
-          // subtext: JSON.stringify(sentimentAnalysis),
           postmark: new Date()
         }
       }
@@ -113,7 +118,7 @@ module.exports = function (server) {
           you: true
         }]
       } else {
-        let sentimentAnalysis = sentiment(messageText)
+        let sentimentAnalysis = sentiment(messageText, extraWords)
         data.message.body = 'Sentiment analysis: ' + JSON.stringify(sentimentAnalysis)
         data.message.subtext = JSON.stringify(sentimentAnalysis)
       }
