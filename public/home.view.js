@@ -6,6 +6,7 @@ angular.module('floatApp').component('home', {
     var vm = this
 
     vm.isConnected = false
+    vm.userDirectory = {}
 
     primus.$on('open', function () {
       vm.messages = []
@@ -19,8 +20,17 @@ angular.module('floatApp').component('home', {
 
     primus.$on('data', function (data) {
       $log.log('Received: ' + JSON.stringify(data))
-      if (data.body) {
-        vm.messages.push(data)
+      if (data.message) {
+        vm.messages.push(data.message)
+      }
+      if (data.users) {
+        data.users.forEach(function (user) {
+          vm.userDirectory[user.id] = user.name
+          if (user.you) {
+            vm.userId = user.id
+          }
+        })
+        console.log(vm.userDirectory)
       }
     })
 
@@ -72,11 +82,6 @@ angular.module('floatApp').component('home', {
     vm.write = function () {
       var postmark = new Date()
       primus.write({
-        body: vm.message,
-        postmark: postmark
-      })
-      vm.messages.push({
-        username: 'You',
         body: vm.message,
         postmark: postmark
       })

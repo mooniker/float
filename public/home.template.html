@@ -7,9 +7,9 @@
 
     <div class="container">
         <ul class="list-group">
-            <li data-ng-repeat="message in $ctrl.messages" class="list-group-item" data-ng-class="{'disabled': !message.username}">
-                <span data-ng-if="message.username" class="label" data-ng-class="message.username === 'You' ? 'label-default' : 'label-primary'">{{message.username}}</span>
-                <span data-ng-class="{'small text-uppercase': !message.username}">{{message.body}}</span>
+            <li data-ng-repeat="message in $ctrl.messages" class="list-group-item" data-ng-class="{'disabled': !message.userId && message.userId !== 0}">
+                <span data-ng-if="message.userId != null" class="label" data-ng-class="message.userId === $ctrl.userId ? 'label-default' : 'label-primary'" title="userId: {{message.userId}}">{{$ctrl.userDirectory[message.userId]}}</span>
+                <span data-ng-class="{'small text-uppercase': message.userId == null}" title="{{message.subtext}}">{{message.body}}</span>
                 <small am-time-ago="message.postmark" class="pull-right"></small>
             </li>
         </ul>
@@ -21,9 +21,9 @@
                         <input type="text" data-ng-model="$ctrl.message" class="form-control" id="message-input" placeholder="type your message here" autocomplete="off" autofocus>
                     </div>
                     <div class="col-sm-2">
-                    <button type="submit" data-ng-click="$ctrl.write()" for="send-message-form" class="btn btn-primary form-control" data-ng-disabled="!$ctrl.isConnected || !$ctrl.message">
-                        {{$ctrl.isConnected ? 'send' : 'wait'}}
-                    </button>
+                        <button type="submit" data-ng-click="$ctrl.write()" for="send-message-form" class="btn btn-primary form-control" data-ng-disabled="!$ctrl.isConnected || !$ctrl.message">
+                            {{$ctrl.isConnected ? 'send' : 'wait'}}
+                        </button>
                     </div>
                 </div>
             </form>

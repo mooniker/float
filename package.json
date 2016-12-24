@@ -17,6 +17,7 @@
     "mongoose": "^4.7.4",
     "morgan": "^1.7.0",
     "primus": "^6.0.7",
+    "sentiment": "^2.1.0",
     "ws": "^1.1.1"
   },
   "devDependencies": {
