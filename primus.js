@@ -87,16 +87,28 @@ module.exports = function (server) {
 
     function respondToMessage (message) {
       let messageText = message.body.toString()
-      let sentimentAnalysis = sentiment(messageText)
-      spark.write({
+      let data = {
         message: {
           userId: serverId,
           // body: chance.sentence(),
-          body: 'Sentiment analysis: ' + JSON.stringify(sentimentAnalysis),
-          subtext: JSON.stringify(sentimentAnalysis),
+          // subtext: JSON.stringify(sentimentAnalysis),
           postmark: new Date()
         }
-      })
+      }
+      if (message.name) {
+        data.message.body = `OK, I'll call you ${message.name} (instead of ${theirName}).`
+        theirName = message.name
+        data.users = [{
+          name: theirName,
+          id: spark.id,
+          you: true
+        }]
+      } else {
+        let sentimentAnalysis = sentiment(messageText)
+        data.message.body = 'Sentiment analysis: ' + JSON.stringify(sentimentAnalysis)
+        data.message.subtext = JSON.stringify(sentimentAnalysis)
+      }
+      spark.write(data)
     }
 
     let expectingResponse = receiveName

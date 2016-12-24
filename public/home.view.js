@@ -80,11 +80,23 @@ angular.module('floatApp').component('home', {
     })
 
     vm.write = function () {
-      var postmark = new Date()
-      primus.write({
+      // var postmark = new Date()
+      var data = {
         body: vm.message,
-        postmark: postmark
-      })
+        postmark: new Date()
+      }
+      if (vm.message[0] === '/') {
+        var args = vm.message.trim().split(' ')
+        switch (args[0].toLowerCase()) {
+          case '/name':
+            data.name = args.slice(1).join(' ')
+            break
+          default:
+            $log.log('Unrecognized command.')
+        }
+      }
+      primus.write(data)
+      $log.log('Sent', data)
       vm.message = null
     }
 
