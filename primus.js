@@ -25,7 +25,7 @@ module.exports = function (server) {
     // console.log('connection was made from', spark.address)
     console.log('connection id', spark.id)
 
-    let username = chance.pickone(['Claude', 'Francis', 'Pavel', 'Carl', 'Wilhelm'])
+    let introBotName = chance.pickone(['Claude', 'Francis', 'Pavel', 'Pavla', 'Carl', 'Carla', 'Wilhelm', 'Wilhelmina'])
     const serverId = 0
 
     let theirName = 'You'
@@ -37,12 +37,12 @@ module.exports = function (server) {
         id: spark.id,
         you: true
       }, {
-        name: username,
+        name: introBotName,
         id: serverId
       }],
       message: {
         userId: serverId,
-        body: `Hi, my name is ${username}. What should I call you?`,
+        body: `Hi, my name is ${introBotName}. What should I call you?`,
         postmark: new Date()
       }
     })
