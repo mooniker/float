@@ -1,4 +1,4 @@
-# Float Messenger [![Dependency Status](https://david-dm.org/mooniker/float.svg)](https://david-dm.org/mooniker/float)
+# Float Messenger [![Build Status](https://travis-ci.org/mooniker/float.svg?branch=master)](https://travis-ci.org/mooniker/float) [![Dependency Status](https://david-dm.org/mooniker/float.svg)](https://david-dm.org/mooniker/float)
 
 Float Messenger is web-based instant messaging server and client software built on the MEAN stack.
 
