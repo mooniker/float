@@ -10,12 +10,12 @@ let should = chai.should()
 chai.use(require('chai-http'))
 
 describe('HTTP server', () => {
-  it('should respond to `GET /ping` with JSON-packaged "pong"', (done) => {
+  it('should respond to `GET /ping` with JSON-packaged "pong"', done => {
     chai.request(server)
       .get('/ping')
-      .end((err, res) => {
-          res.should.have.status(200)
-          // TODO check to make sure PONG is returned
+      .end((err, response) => {
+          response.should.have.status(200)
+          response.should.be.json
         done()
       })
   })
