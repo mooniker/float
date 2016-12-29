@@ -1,8 +1,8 @@
 'use strict'
 
-angular.module('floatApp').component('home', {
-  templateUrl: 'home.template.html',
-  controller: function HomeController (Uplink, $localStorage, $log) {
+angular.module('floatApp').component('chat', {
+  templateUrl: 'chat.template.html',
+  controller: function ChatController (Uplink, $localStorage, $log) {
     var vm = this
 
     // vm.storage = $localStorage

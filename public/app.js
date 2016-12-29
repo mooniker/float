@@ -15,7 +15,7 @@ angular.module('floatApp', [
 .config(function ($routeProvider) {
   $routeProvider
     .when('/', {
-      template: '<home></home>'
+      template: '<chat></chat>'
     })
     .otherwise({
       redirectTo: '/'
