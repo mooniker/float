@@ -2,7 +2,7 @@
 
 angular.module('floatApp').factory('Uplink', Uplink)
 
-function Uplink (primus, $localStorage, $log) {
+function Uplink (primus, $localStorage, $location, $log) {
   // reset the local cache and initialize
   $localStorage.$reset()
 
@@ -22,6 +22,7 @@ function Uplink (primus, $localStorage, $log) {
     if (!$localStorage.channels.welcome) {
       $localStorage.channels.welcome = {
         messages: [],
+        events: [],
         users: {}
       }
     }
@@ -31,6 +32,10 @@ function Uplink (primus, $localStorage, $log) {
       postmark: new Date()
     })
     $localStorage.isConnected = true
+
+    // on connection, send the user to floatbot
+    // $location.url('/chat/floatbot')
+    // $log.log('Redirectiong to /chat/floatbot')
   })
 
   primus.$on('data', function (data) {
@@ -40,6 +45,7 @@ function Uplink (primus, $localStorage, $log) {
     if (!$localStorage.channels[data.to]) {
       $localStorage.channels[data.to] = {
         messages: [],
+        events: [],
         users: {}
       }
     }
@@ -47,6 +53,10 @@ function Uplink (primus, $localStorage, $log) {
     // insert message (if provided) into the proper channel
     if (data.message) {
       $localStorage.channels[data.to].messages.push(data.message)
+    }
+
+    if (data.event) {
+      $localStorage.channels[data.to].events.push(data.event)
     }
 
     if (data.users) {
@@ -57,6 +67,11 @@ function Uplink (primus, $localStorage, $log) {
         }
       })
       $log.log($localStorage.userDirectory)
+    }
+
+    if (data.join) {
+      $location.url('/chat/' + data.join)
+      $log.log('Redirect to /chat/' + data.join)
     }
   })
 
@@ -109,17 +124,21 @@ function Uplink (primus, $localStorage, $log) {
   })
 
   return {
-    send: function (message) {
+    send: function (message, channel) {
       // var postmark = new Date()
       var data = {
         body: message,
-        postmark: new Date()
+        postmark: new Date(),
+        channel: channel
       }
       if (message[0] === '/') {
         var args = message.trim().split(' ')
         switch (args[0].toLowerCase()) {
           case '/name':
             data.name = args.slice(1).join(' ')
+            break
+          case '/join':
+            data.join = args.splice(1).join(' ')
             break
           default:
             $log.log('Unrecognized command.')

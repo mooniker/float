@@ -1,11 +1,14 @@
 <div class="container">
-    <!--<div class="page-header">
+    <div class="page-header">
         <h2>
-            Hello, world!
+            {{$ctrl.channel}}
+            <small>{{$ctrl.chat}}</small>
         </h2>
-    </div>-->
+    </div>
 
-    <div class="container">
+    <div class="row">
+
+    <div class="container col-md-8">
         <ul class="list-group">
             <li data-ng-repeat="message in $ctrl.$storage.channels[$ctrl.channel].messages" class="list-group-item" data-ng-class="{'disabled': !message.userId && message.userId !== 0}">
                 <span data-ng-if="message.userId != null" class="label" data-ng-class="message.userId === $ctrl.$storage.userId ? 'label-default' : 'label-primary'" title="userId: {{message.userId}}">{{$ctrl.$storage.userDirectory[message.userId]}}</span>
@@ -29,6 +32,17 @@
             </form>
         </div>
     </div>
+
+    <div class="container col-md-4">
+        <ul class="list-group">
+            <li data-ng-repeat="event in $ctrl.$storage.channels[$ctrl.channel].events" class="list-group-item">
+                <span>{{event.body}}</span>
+                <small am-time-ago="event.postmark" class="label label-default"></small>
+            </li>
+        </ul>
+    </div>
+
+    </div><!-- ./row -->
     
     <!--$localStorage: <pre><code>{{$ctrl.$storage | json:2}}</code></pre>-->
 

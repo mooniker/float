@@ -13,6 +13,8 @@ const extraWords = {
   'yep': 1,
   'yup': 1,
   'yesh': 1,
+  'sure': 1,
+  'affirmative': 1,
   'nope': -1,
   'nah': -1
 }
@@ -23,9 +25,15 @@ module.exports = function (server) {
   primus.on('connection', function (spark) {
     // console.log('connection has the following headers', spark.headers)
     // console.log('connection was made from', spark.address)
-    console.log('connection id', spark.id)
+    // console.log('connection id', spark.id)
 
-    let introBotName = chance.pickone(['Claude', 'Francis', 'Pavel', 'Pavla', 'Carl', 'Carla', 'Wilhelm', 'Wilhelmina'])
+    let introBotName = chance.pickone([
+      'Claude',
+      'Francis',
+      chance.pickone(['Pavel', 'Pavla']),
+      chance.pickone(['Carl', 'Carla']),
+      chance.pickone(['Wilhelm', 'Wilhelmina'])
+    ])
     const serverId = 0
 
     let theirName = 'You'
@@ -44,6 +52,10 @@ module.exports = function (server) {
       message: {
         userId: serverId,
         body: `Hi, my name is ${introBotName}. What should I call you?`,
+        postmark: new Date()
+      },
+      event: {
+        body: `Connection id = ${spark.id}`,
         postmark: new Date()
       }
     })
@@ -123,6 +135,11 @@ module.exports = function (server) {
           id: spark.id,
           you: true
         }]
+      } else if (message.join) {
+        // all channels are public at this point (TODO)
+        data.message.body = 'Roger.'
+        data.message.subtext = `User requests to join ${message.join}.`
+        data.join = message.join
       } else {
         let sentimentAnalysis = sentiment(messageText, extraWords)
         data.message.body = 'Sentiment analysis: ' + JSON.stringify(sentimentAnalysis)
@@ -134,22 +151,32 @@ module.exports = function (server) {
     let expectingResponse = receiveName
 
     // Receive messages
-    spark.on('data', function (message) {
-      let messageText = message.body.toString()
+    spark.on('data', function (data) {
+      let messageText = data.body.toString()
       console.log('connection', spark.id, 'sends', messageText)
-      spark.write({
-        to: `welcome`,
-        message: {
-          userId: spark.id,
-          body: messageText,
-          postmark: message.postmark
-        }
-      })
 
-      if (expectingResponse) {
-        expectingResponse(message)
+      let message = {
+        userId: spark.id,
+        body: data.body.toString(),
+        postmark: data.postmark
+      }
+
+      if (data.channel === 'welcome') {
+        spark.write({
+          to: `welcome`,
+          message: message
+        })
+
+        if (expectingResponse) {
+          expectingResponse(data)
+        } else {
+          respondToMessage(data)
+        }
       } else {
-        respondToMessage(message)
+        primus.write({
+          to: data.channel,
+          message: message
+        })
       }
     })
   })

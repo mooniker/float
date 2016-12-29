@@ -10,11 +10,18 @@ angular.module('floatApp', [
   // 'ui.bootstrap',
   'primus',
   'angularMoment',
-  'ngStorage'
+  'ngStorage',
+  'ngRoute'
 ])
 .config(function ($routeProvider) {
   $routeProvider
     .when('/', {
+      template: '<chat></chat>'
+    })
+    .when('/chat/welcome', {
+      redirectTo: '/'
+    })
+    .when('/chat/:channel', {
       template: '<chat></chat>'
     })
     .otherwise({
