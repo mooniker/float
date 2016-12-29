@@ -9,7 +9,8 @@ angular.module('floatApp', [
   // 'ngTouch',
   // 'ui.bootstrap',
   'primus',
-  'angularMoment'
+  'angularMoment',
+  'ngStorage'
 ])
 .config(function ($routeProvider) {
   $routeProvider

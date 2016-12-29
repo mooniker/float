@@ -16,6 +16,7 @@
     "moment": "^2.17.1",
     "mongoose": "^4.7.4",
     "morgan": "^1.7.0",
+    "ngstorage": "^0.3.11",
     "primus": "^6.0.7",
     "sentiment": "^2.1.0",
     "ws": "^1.1.1"

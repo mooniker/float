@@ -32,6 +32,7 @@ module.exports = function (server) {
     let theirNameUnconfirmed = null
 
     spark.write({
+      to: 'welcome',
       users: [{
         name: theirName,
         id: spark.id,
@@ -50,6 +51,7 @@ module.exports = function (server) {
     function receiveName (message) {
       theirNameUnconfirmed = message.body.trim()
       spark.write({
+        to: 'welcome',
         message: {
           userId: serverId,
           body: `So it's OK if I call you ${theirNameUnconfirmed}?`,
@@ -66,6 +68,7 @@ module.exports = function (server) {
         theirName = theirNameUnconfirmed
         theirNameUnconfirmed = null
         spark.write({
+          to: 'welcome',
           users: [{
             name: theirName,
             id: spark.id,
@@ -80,6 +83,7 @@ module.exports = function (server) {
         })
       } else if (confirmation.score === 0) {
         spark.write({
+          to: 'welcome',
           message: {
             userId: serverId,
             body: `Huh? Are you ${theirNameUnconfirmed} - yes or no?`,
@@ -91,6 +95,7 @@ module.exports = function (server) {
         expectingResponse = receiveName
         theirNameUnconfirmed = null
         spark.write({
+          to: 'welcome',
           message: {
             userId: serverId,
             body: `No? What shall I call you then?`,
@@ -104,6 +109,7 @@ module.exports = function (server) {
     function respondToMessage (message) {
       let messageText = message.body.toString()
       let data = {
+        to: 'welcome',
         message: {
           userId: serverId,
           postmark: new Date()
@@ -132,6 +138,7 @@ module.exports = function (server) {
       let messageText = message.body.toString()
       console.log('connection', spark.id, 'sends', messageText)
       spark.write({
+        to: `welcome`,
         message: {
           userId: spark.id,
           body: messageText,

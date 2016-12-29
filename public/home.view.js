@@ -2,110 +2,20 @@
 
 angular.module('floatApp').component('home', {
   templateUrl: 'home.template.html',
-  controller: function HomeController (primus, $log) {
+  controller: function HomeController (Uplink, $localStorage, $log) {
     var vm = this
 
-    vm.isConnected = false
-    vm.userDirectory = {}
+    // vm.storage = $localStorage
 
-    primus.$on('open', function () {
-      vm.messages = []
-      $log.log('Connection established.')
-      vm.messages.push({
-        body: 'Connection established.',
-        postmark: new Date()
-      })
-      vm.isConnected = true
-    })
+    vm.channel = 'welcome'
 
-    primus.$on('data', function (data) {
-      $log.log('Received: ' + JSON.stringify(data))
-      if (data.message) {
-        vm.messages.push(data.message)
-      }
-      if (data.users) {
-        data.users.forEach(function (user) {
-          vm.userDirectory[user.id] = user.name
-          if (user.you) {
-            vm.userId = user.id
-          }
-        })
-        console.log(vm.userDirectory)
-      }
-    })
-
-    primus.$on('error', function (err) {
-      $log.error(err)
-    })
-
-    primus.$on('reconnect', function (options) {
-      $log.log('Attempting to reconnect.', options)
-      vm.isConnected = false
-    })
-
-    primus.$on('reconnect scheduled', function (options) {
-      vm.messages.push({
-        body: 'Connection lost. Trying to reconnect.',
-        postmark: new Date()
-      })
-      $log.log('Reconnecting in %d ms', options.scheduled)
-      $log.log('This is attempt %d out of %d', options.attempt, options.retries)
-      vm.isConnected = false
-    })
-
-    primus.on('reconnected', function (options) {
-      $log.log('It took %d ms to reconnect', options.duration)
-      vm.isConnected = true
-    })
-
-    primus.on('reconnect timeout', function (err, opts) {
-      $log.log('Timeout expired: %s', err.message)
-      vm.messages.push({
-        body: 'Attempt to reconnect failed.'
-      })
-    })
-
-    primus.on('reconnect failed', function (err, opts) {
-      $log.log('The reconnection failed: %s', err.message)
-      vm.messages.push({
-        body: 'Attempt to reconnect failed.'
-      })
-    })
-
-    primus.on('end', function () {
-      $log.log('Connection closed')
-      vm.messages.push({
-        body: 'Connection closed.'
-      })
-    })
-
-    vm.write = function () {
-      // var postmark = new Date()
-      var data = {
-        body: vm.message,
-        postmark: new Date()
-      }
-      if (vm.message[0] === '/') {
-        var args = vm.message.trim().split(' ')
-        switch (args[0].toLowerCase()) {
-          case '/name':
-            data.name = args.slice(1).join(' ')
-            break
-          default:
-            $log.log('Unrecognized command.')
-        }
-      }
-      primus.write(data)
-      $log.log('Sent', data)
+    vm.send = function (xmessage) {
+      Uplink.send(vm.message)
       vm.message = null
     }
 
-    vm.end = function () {
-      primus.end()
-    }
-
     vm.$onInit = function () {
-      $log.log('Hi.')
+      vm.$storage = $localStorage
     }
   }
 })
